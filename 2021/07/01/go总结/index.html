@@ -309,33 +309,25 @@
   
 
   
-  <div id="SOHUCS" sid="go总结" ></div> 
-<script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
-<script type="text/javascript">
-    window.changyan.api.config({
-        appid: "cytbHbyh0",
-        conf: "b76bce8513c4a67bfe6a84b381cc7e23"
-    });
-(function () {
-var style = document.createElement('style');
-style.type = 'text/css';
-style.innerHTML = '#pop_ad{ display: none !important; }';
-document.getElementsByTagName('HEAD').item(0).appendChild(style);
-
-var __observe = window.MutationObserver.prototype.observe;
-window.MutationObserver.prototype.observe = function (target, options) {
-if (target.id !== "cy-cmt-list") return __observe();
-return setTimeout(function () {
-document.getElementById('feedAv').style.cssText = 'display: none !important';
-}, 0);
-};
-}());
-</script>
-</script>
-  
 
   
 
+  
+  <div id="gitment-ctn"></div> 
+<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
+<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: "https://mr820.github.io/2021/07/01/go%E6%80%BB%E7%BB%93/",
+  owner: 'mr820',
+  repo: 'mr820.github.io',
+  oauth: {
+    client_id: 'cc459c628838aa460cc5',
+    client_secret: 'b57bc7893333f9ddf98101a5e022e628d290e6f7',
+  },
+})
+gitment.render('gitment-ctn')
+</script>
   
 
 
