@@ -279,6 +279,15 @@ var _hmt = _hmt || [];
 			</div>
 			<div class="footer-right">
 
+				<span id="busuanzi_container_site_uv">
+					本站访客数：<span id="busuanzi_value_site_uv"></span>人 |
+				</span>
+				<span id="busuanzi_container_page_pv">
+					本文总阅读量：<span id="busuanzi_value_page_pv"></span>次
+				</span>
+
+				｜
+
 				<span id="sitetime"></span>
 
 				<!-- <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten -->
@@ -287,6 +296,7 @@ var _hmt = _hmt || [];
 		</div>
 	</div>
 </footer>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <script language=javascript>
 	function siteTime() {
@@ -319,7 +329,7 @@ var _hmt = _hmt || [];
 		var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
 		var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) / minutes);
 		var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours - diffMinutes * minutes) / seconds);
-		document.getElementById("sitetime").innerHTML = " 已运行" +diffYears+" 年 "+diffDays + " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+		document.getElementById("sitetime").innerHTML = " 已运行" + diffYears + " 年 " + diffDays + " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
 	}/*因为建站时间还没有一年，就将之注释掉了。需要的可以取消*/
 	siteTime();
 </script>
