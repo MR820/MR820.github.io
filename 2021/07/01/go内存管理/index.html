@@ -8,18 +8,24 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>go内存管理 | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="go语言介绍 图解Go语言的gc算法 Go内存分配器可视化指南【译】【精】 TCMalloc 内存分配原理简析 Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下面代码为">
+  <meta name="description" content="Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下面代码为例，指针指向int类型">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go内存管理">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
-<meta property="og:description" content="go语言介绍 图解Go语言的gc算法 Go内存分配器可视化指南【译】【精】 TCMalloc 内存分配原理简析 Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下面代码为">
+<meta property="og:description" content="Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下面代码为例，指针指向int类型">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20210705102926048.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/vFtq3uj.png">
+<meta property="og:image" content="https://i.imgur.com/IxjG2aF.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Kh26oVp.gif">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/PY4pZhq.gif">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/uLhLZMm.gif">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Go_GC.pdf">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/2021-2-19T155548.gif">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20210706113551727.png">
 <meta property="article:published_time" content="2021-07-01T03:30:11.000Z">
-<meta property="article:modified_time" content="2021-07-06T07:32:13.068Z">
+<meta property="article:modified_time" content="2021-07-06T08:15:24.778Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="内存管理">
 <meta property="article:tag" content="GC">
@@ -197,11 +203,7 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><a target="_blank" rel="noopener" href="https://ke.qq.com/webcourse/index.html#cid=2839764&term_id=102950688&taid=9884545112036564&type=1024&vid=5285890805835328863">go语言介绍</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8e0a3709b2ee">图解Go语言的gc算法</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html">Go内存分配器可视化指南【译】【精】</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html">TCMalloc 内存分配原理简析</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.codercto.com/a/99611.html">Go GC 20 问</a></p>
+        <p><a target="_blank" rel="noopener" href="https://www.codercto.com/a/99611.html">Go GC 20 问</a></p>
 <p><a target="_blank" rel="noopener" href="https://deepu.tech/memory-management-in-programming/">Demystifying memory management in modern programming languages</a></p>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyNzM0MDk0Mg==&chksm=e863e655df146f437d107978c4632ddb4dafd29395e06d422d13c94861eeb993f2c7e079ea4a&idx=1&mid=2247483828&scene=21&sn=d8bcc352a0ad2fdb5e02f3a2c40c4b2b#wechat_redirect">Goroutine调度实例简要分析</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigwhite20xx/article/details/104809795">可视化Go内存管理</a></p>
@@ -213,7 +215,7 @@ var _hmt = _hmt || [];
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pi *<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span> = <span class="number">8</span></span><br><span class="line">pi = &amp;i</span><br></pre></td></tr></table></figure>
 
 <p>指针的作用，传递参数</p>
-<h2 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h2><p>Go运行时，Groutines（G）调度到逻辑处理器（P）上执行。每个P都有一台逻辑机器（M）。</p>
+<h2 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h2><p><em>Go Runtime将Goroutines（</em><code>G</code><em>）<strong>安排</strong>到逻辑处理器（</em><code>P</code><em>）执行。每个</em><code>P</code><em>都有一台机器（</em><code>M</code><em>）</em></p>
 <p>Go从1.5版本之后将默认的P的数量改为 = CPU core的数量（实际上还乘以了每个core上硬线程数量）</p>
 <p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20210705102926048.png" alt="image-20210705102926048"></p>
 <h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><h3 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h3><p>软件在操作系统上运行时，需要访问计算机RAM（随机读取内存）以：</p>
@@ -226,14 +228,19 @@ var _hmt = _hmt || [];
 <p>堆栈</p>
 <p>用于<strong>静态内存分配</strong>，顾名思义，它是后进后出（<strong>LIFO</strong>）堆栈（将其视为一栈框）</p>
 <ul>
-<li>存储在堆栈上的任何数据必须是<strong>有限和静态</strong>的（数据的大小在编译时已知）。</li>
-<li>函数的执行数据以<strong>栈帧</strong>的形式存储（所以，这就是实际的执行栈 ） 。每个帧都是存储该函数所需数据的一块空间。例如，每次函数声明新变量时，它都会被“推送”到堆栈中最顶层的块上。然后，每次函数退出时，最上面的块都会被清除，因此该函数推送到堆栈上的所有变量都被清除。由于存储在这里的数据的静态性质，这些可以在编译时确定。</li>
-<li><strong>多线程应用****每个线程</strong>可以有一个<strong>堆栈</strong>。**</li>
-<li><strong>存储在堆栈上的典型数据是</strong>局部变量<strong>（值类型或原语、原语常量）、</strong>指针<strong>和</strong>函数帧**。</li>
+<li>由于这种性质，从堆栈中存储和检索数据的过程<strong>非常快</strong>，因为不需要查找，您只需从堆栈的最顶层块存储和检索数据。</li>
+<li>但这意味着存储在堆栈上的任何数据必须是<strong>有限和静态</strong>的（数据的大小在编译时已知）。</li>
+<li>这里是函数的执行数据以<strong>栈帧</strong>的形式存储（所以，这就是实际的执行栈 ） 。每个帧都是存储该函数所需数据的一块空间。例如，每次函数声明新变量时，它都会被“推送”到堆栈中最顶层的块上。然后，每次函数退出时，最上面的块都会被清除，因此该函数推送到堆栈上的所有变量都被清除。由于存储在这里的数据的静态性质，这些可以在编译时确定。</li>
+<li><strong>多线程应用****每个线程</strong>可以有一个<strong>堆栈</strong>。</li>
+<li>堆栈的内存管理<strong>简单明了</strong>，由操作系统完成。</li>
+<li>存储在堆栈上的典型数据是<strong>局部变量</strong>（值类型或原语、原语常量）、<strong>指针</strong>和<strong>函数帧</strong>。</li>
+<li>在这里，您将遇到<strong>堆栈溢出错误</strong>，因为与堆相比，堆栈的大小有限。</li>
+<li>对于大多数语言<strong>来说，</strong>可以存储在堆栈上的值<strong>大小</strong>都有<strong>限制</strong>。</li>
 </ul>
 <p>堆</p>
 <p>堆是用来进行<strong>动态内存分配</strong>的，与栈不同，程序需要使用<strong>指针</strong>查找堆中的数据（把它想象成一个大型多级库 ） 。</p>
 <ul>
+<li>它比堆栈<strong>慢</strong>，因为查找数据的过程更复杂，但它可以存储比堆栈更多的数据。</li>
 <li>这意味着<strong>动态大小</strong>的数据可以存储在这里。</li>
 <li>堆在应用程序的线程之间<strong>共享</strong>。</li>
 <li>由于其动态性质，堆<strong>管理起来更棘手</strong>，这是大多数内存管理问题的产生地，也是语言自动内存管理解决方案发挥作用的地方。</li>
@@ -241,14 +248,52 @@ var _hmt = _hmt || [];
 <li>如果您的应用程序试图使用比分配<strong>的</strong>堆更多的内存，您将遇到<strong>内存错误</strong>（尽管这里还有许多其他因素在起作用，如GC，压缩）。</li>
 <li>一般来说，可以存储在堆上的值的大小<strong>没有限制</strong>。当然，分配给应用程序的内存上限是存在的。</li>
 </ul>
+<p>与硬盘驱动器不同，RAM不是无限的。如果一个程序在不释放内存的情况下继续消耗内存，最终它会耗尽内存并崩溃，甚至更糟地崩溃操作系统。因此，软件程序不能随心所欲地使用RAM，因为这会导致其他程序和进程耗尽内存。因此，大多数编程语言没有让软件开发人员解决这个问题，而是提供了自动内存管理的方法。当我们谈论内存管理时，我们主要谈论的是管理堆内存。</p>
 <p>内存分为栈存储区和堆存储区，每个Goroutine（G）有一个栈。在这里存储了静态数据，包括<strong>函数栈帧</strong>，<strong>静态结构</strong>，<strong>原生类型值</strong>和<strong>指向动态结构的指针</strong>。这与分配给每个P的mcache不是一回事。</p>
-<p>内存关闭包括在需要内存时自动分配，不需要内存时进行垃圾回收。这是有标准库完成的（runtime包）</p>
-<h3 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h3><p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60df0205f346fb04d2d65b50">小知识 tcmalloc分配算法 (Thread Cache Malloc)</a></p>
+<p>内存管理包括在需要内存时自动分配，不需要内存时进行垃圾回收。这是有标准库完成的（runtime包）</p>
+<h3 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h3><p>每个Go程序进程都被操作系统（OS）分配了一些虚拟内存，这是进程可以访问的总内存。在虚拟内存中使用的实际内存称为<strong>常驻集</strong>。这个空间由内部内存结构管理如下：</p>
+<p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/vFtq3uj.png" alt="Go内存结构"></p>
+<p>这是一个基于Go使用的内部对象的简化视图，实际上，Go将内存分割和分组为页面</p>
+<p>正如你所看到的，这里没有代际记忆。造成这种情况的主要原因是<a target="_blank" rel="noopener" href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html"><strong>TCMalloc</strong></a>（线程缓存Maloc），这是Go自己的内存分配器所模仿的。</p>
+<h4 id="Page-Heap-mheap"><a href="#Page-Heap-mheap" class="headerlink" title="Page Heap(mheap)"></a>Page Heap(mheap)</h4><p>这就是Go存储动态数据的地方（任何大小的数据在编译时无法计算）。这是最大的内存块，也是<strong>垃圾收集（GC）</strong>发生的地方。</p>
+<p>常驻集分为每个8KB的页面，由一个全局<code>mheap</code>对象管理。</p>
+<blockquote>
+<p><em>大对象（大小&gt;32kb的对象）直接从</em><code>mheap</code><em>分配<strong>。这些大请求是以牺牲中央锁为代价的，因此</strong>在任何给定的时间点只能满足**一个</em><code>P</code><em>的请求。</em></p>
+</blockquote>
+<ul>
+<li><p><strong>mspan</strong>：<code>mspan</code>是管理<code>mheap</code>内存页的最基本结构。这是一个双链表，包含起始页面的地址、跨度大小类和跨度中的页面数量。与TCMalloc一样，Go还将内存页面按大小分为67个不同类，从8字节到32千字节不等，如下图所示</p>
+<p><img src="https://i.imgur.com/IxjG2aF.png" alt="img"></p>
+<p>每个跨度存在两次，一个用于有指针的对象（<strong>扫描</strong>类），一个用于没有指针的对象（**<code>noscan</code>**类）。这在GC期间有帮助，因为<code>noscan</code>跨度不需要遍历来查找活动对象。</p>
+<ul>
+<li><p><strong>mcentral</strong>：<code>mcentral</code>将相同大小类别的跨度组合在一起。每个<code>mcentral</code>包含两个<code>mspanList</code>：</p>
+<ul>
+<li><p><strong>空</strong>：span 的双链表，没有空闲对象或缓存在<code>mcache</code>. 当这里的一个跨度被释放时，它被移动到非空列表中。</p>
+</li>
+<li><p><strong>非空</strong>：具有自由对象的跨度双链表。当从 请求新的跨度时<code>mcentral</code>，它会从非空列表中获取它并将其移动到空列表中。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>当<code>mcentral</code>没有任何空闲跨度时，它会从<code>mheap</code>获取</p>
+<ul>
+<li><strong>arena</strong>：堆内存在分配的虚拟内存中根据需要增长和收缩。当需要更多内存时，<code>mheap</code>将它们从虚拟内存中提取为 64MB（对于 64 位体系结构）的块，称为<code>arena</code>. 这些页面在这里映射到跨度。</li>
+<li><strong>mcache</strong>：这是一个非常有趣的构造。<code>mcache</code>是提供给<code>P</code>（逻辑处理器）的内存缓存，用于存储小对象（对象大小 &lt;= 32Kb）。虽然这类似于线程堆栈，但它是堆的一部分，用于动态数据。<code>mcache</code>包含<code>scan</code>和所有类大小的<code>noscan</code>类型<code>mspan</code>。Goroutines 可以在<code>mcache</code>没有任何锁的情况下获取内存，因为一次<code>P</code>只能有一个<code>G</code>在运行。因此，这更有效。<code>mcache</code>从<code>mcentral</code>需要时请求新的跨度。</li>
+</ul>
+</li>
+</ul>
+<p>&lt;16B</p>
+<p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Kh26oVp.gif" alt="微小的分配"></p>
+<p>16B~32KB</p>
+<p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/PY4pZhq.gif" alt="小分配"></p>
+<p><code>&gt;</code>32KB</p>
+<p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/uLhLZMm.gif" alt="大分配"></p>
+<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60df0205f346fb04d2d65b50">小知识 tcmalloc分配算法 (Thread Cache Malloc)</a></p>
 <h3 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h3><p>gc清理的是堆内存</p>
+<p><img src="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Go_GC.pdf" alt="GO_GC"></p>
 <p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60dd5a2ce401fd7e34279faa">JVM GC</a></p>
 <h4 id="根对象"><a href="#根对象" class="headerlink" title="根对象"></a>根对象</h4><p>在垃圾回收的术语中，由叫做根集合。他是垃圾回收器在标记过程中最先检查的对象，包括：</p>
 <ol>
-<li>全局变量：程序在编译期就能确定的哪些存在于程序整个生命周期的变量</li>
+<li>全局变量：程序在编译期就能确定的哪些存在于程序整个生命周期的变量 <a href="../../../Downloads/Go_GC.pdf">Go_GC.pdf</a> </li>
 <li>执行栈：每个goroutine都包含自己的执行栈，这些执行栈上的变量及指向分配的堆内存块的指针</li>
 <li>寄存器：寄存器的值可能表示一个指针，参与计算的这些指针可能指向某些赋值器分配的堆内存区块</li>
 </ol>
@@ -433,7 +478,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88"><span class="toc-number">1.</span> <span class="toc-text">指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GMP%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">GMP模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A5%E9%97%A8"><span class="toc-number">3.1.</span> <span class="toc-text">入门</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">3.2.</span> <span class="toc-text">内存分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC"><span class="toc-number">3.3.</span> <span class="toc-text">GC</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.3.1.</span> <span class="toc-text">根对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="toc-number">3.3.2.</span> <span class="toc-text">三色标记法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.3.</span> <span class="toc-text">go gc流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C%EF%BC%88hybrid-write-barrier%EF%BC%89"><span class="toc-number">3.3.4.</span> <span class="toc-text">混合写屏障（hybrid write barrier）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%80%BB%E7%BB%93"><span class="toc-number">3.3.5.</span> <span class="toc-text">go gc总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">4.</span> <span class="toc-text">反射</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%94%AF%E4%B8%BB%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">分支主题</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E9%92%88"><span class="toc-number">1.</span> <span class="toc-text">指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GMP%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">GMP模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A5%E9%97%A8"><span class="toc-number">3.1.</span> <span class="toc-text">入门</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">3.2.</span> <span class="toc-text">内存分配</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Page-Heap-mheap"><span class="toc-number">3.2.1.</span> <span class="toc-text">Page Heap(mheap)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC"><span class="toc-number">3.3.</span> <span class="toc-text">GC</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.3.1.</span> <span class="toc-text">根对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="toc-number">3.3.2.</span> <span class="toc-text">三色标记法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.3.</span> <span class="toc-text">go gc流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C%EF%BC%88hybrid-write-barrier%EF%BC%89"><span class="toc-number">3.3.4.</span> <span class="toc-text">混合写屏障（hybrid write barrier）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%80%BB%E7%BB%93"><span class="toc-number">3.3.5.</span> <span class="toc-text">go gc总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">4.</span> <span class="toc-text">反射</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%94%AF%E4%B8%BB%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">分支主题</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
