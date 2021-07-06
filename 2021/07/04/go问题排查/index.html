@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>邢志伟的笔记</title>
+  <title>go问题排查 | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="邢志伟的笔记">
-<meta property="og:url" content="https://note.wyxxt.org.cn/index.html">
+  <meta name="description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  12go build -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;main">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go问题排查">
+<meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
+<meta property="og:description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  12go build -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;main">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706094959970.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100746357.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100811783.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100850922.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png">
+<meta property="article:published_time" content="2021-07-04T06:40:42.000Z">
+<meta property="article:modified_time" content="2021-07-06T07:33:54.791Z">
 <meta property="article:author" content="devin">
+<meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706094959970.png">
   
     <link rel="alternative" href="/atom.xml" title="邢志伟的笔记" type="application/atom+xml">
   
@@ -167,16 +178,14 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-go问题排查" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-go问题排查" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">go问题排查</a>
+    <h1 class="article-title" itemprop="name">
+      go问题排查
     </h1>
   
 
@@ -194,9 +203,105 @@ var _hmt = _hmt || [];
 <li>GODEBUG=gctrace=1</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/#more">more >></a>
-        
+
+<span id="more"></span>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706094959970.png" alt="image-20210706094959970"></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>gc 1</td>
+<td>第一个gc周期</td>
+</tr>
+<tr>
+<td>@0.005s</td>
+<td>程序开始后的0.005s</td>
+</tr>
+<tr>
+<td>4%</td>
+<td>改gc周期中cpu的使用率</td>
+</tr>
+<tr>
+<td>0.013</td>
+<td>标记开始时，STW所话费的时间（wall clock）</td>
+</tr>
+<tr>
+<td>0.72</td>
+<td>标记过程中，并发标记所花费的时间（wall clock）</td>
+</tr>
+<tr>
+<td>0.059</td>
+<td>标记终止时，STW所花费的时间（wall clock）</td>
+</tr>
+<tr>
+<td>0.10</td>
+<td>标记开始时，STW所花费的时间（cpu time）</td>
+</tr>
+<tr>
+<td>0.94</td>
+<td>标记过程中，标记辅助所花费的时间（cpu time）</td>
+</tr>
+<tr>
+<td>0.78</td>
+<td>标记过程中，并发标记所花费的时间（cpu time）</td>
+</tr>
+<tr>
+<td>0</td>
+<td>标记过程中，gc空闲的时间（cpu time）</td>
+</tr>
+<tr>
+<td>0.47</td>
+<td>标记终止时，STW所花费的时间（cpu time）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>标记开始时，堆的大小的实际值</td>
+</tr>
+<tr>
+<td>4</td>
+<td>标记结束时，堆的大小的实际值</td>
+</tr>
+<tr>
+<td>1</td>
+<td>标记结束时，标记为存活的对象大小</td>
+</tr>
+<tr>
+<td>5</td>
+<td>标记结束时，堆的大小的预测值</td>
+</tr>
+<tr>
+<td>8</td>
+<td>P的数量</td>
+</tr>
+</tbody></table>
+<p>wall clock 是指开始执行到完成所经历的实际时间，包括其他程序和本程序所消耗的时间；</p>
+<p>cpu time 是指特定程序使用 cpu 的时间；它们存在以下关系：</p>
+<blockquote>
+<p>wall clock &lt; cpu time:充分利用多核</p>
+<p>wall clock ≈ cpu time:未并行执行</p>
+<p>wall clock &gt; cpu time:多核优势不明显</p>
+</blockquote>
+<ol start="2">
+<li>go tool trace</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">f, err := os.Create(<span class="string">&quot;trace.out&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">	err = trace.Start(f)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> trace.Stop()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool trace trace.out</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100746357.png" alt="image-20210706100746357"></p>
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100811783.png" alt="image-20210706100811783"></p>
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100850922.png" alt="image-20210706100850922"></p>
+<ol start="3">
+<li>debug.ReadGCStats</li>
+<li>runtime.ReadMemStats</li>
+</ol>
+<h4 id="查频繁GC"><a href="#查频繁GC" class="headerlink" title="查频繁GC"></a>查频繁GC</h4><h3 id="pprof"><a href="#pprof" class="headerlink" title="pprof"></a>pprof</h3><h4 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h4><h4 id="cpu过高"><a href="#cpu过高" class="headerlink" title="cpu过高"></a>cpu过高</h4><h4 id="程序慢"><a href="#程序慢" class="headerlink" title="程序慢"></a>程序慢</h4><h4 id="锁的争用"><a href="#锁的争用" class="headerlink" title="锁的争用"></a>锁的争用</h4><h4 id="程序阻塞"><a href="#程序阻塞" class="headerlink" title="程序阻塞"></a>程序阻塞</h4><p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png" alt="image-20210701111108034"></p>
+
       
 
       
@@ -229,16 +334,75 @@ var _hmt = _hmt || [];
 
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2021/07/03/go%E4%BC%98%E5%8C%96/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">go优化</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -253,286 +417,48 @@ var _hmt = _hmt || [];
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-go优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/03/go%E4%BC%98%E5%8C%96/">go优化</a>
-    </h1>
-  
-
-        
-        <a href="/2021/07/03/go%E4%BC%98%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2021-07-03T07:32:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h3><h3 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h3><h3 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h3><h3 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h3><h4 id="对齐方式"><a href="#对齐方式" class="headerlink" title="对齐方式"></a>对齐方式</h4><h4 id="填充方式"><a href="#填充方式" class="headerlink" title="填充方式"></a>填充方式</h4><h4 id="较少内存拷贝"><a href="#较少内存拷贝" class="headerlink" title="较少内存拷贝"></a>较少内存拷贝</h4><p><img src="/2021/07/03/go%E4%BC%98%E5%8C%96/image-20210701111051915.png" alt="image-20210701111051915"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">优化</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/03/go%E4%BC%98%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#trace"><span class="toc-number">1.</span> <span class="toc-text">trace</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E9%A2%91%E7%B9%81GC"><span class="toc-number">1.1.</span> <span class="toc-text">查频繁GC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pprof"><span class="toc-number">2.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">内存泄漏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cpu%E8%BF%87%E9%AB%98"><span class="toc-number">2.2.</span> <span class="toc-text">cpu过高</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E6%85%A2"><span class="toc-number">2.3.</span> <span class="toc-text">程序慢</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%81%E7%9A%84%E4%BA%89%E7%94%A8"><span class="toc-number">2.4.</span> <span class="toc-text">锁的争用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%98%BB%E5%A1%9E"><span class="toc-number">2.5.</span> <span class="toc-text">程序阻塞</span></a></li></ol></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
   
-    <article id="post-go并发编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/01/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">go并发编程</a>
-    </h1>
   
 
-        
-        <a href="/2021/07/01/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="archive-article-date">
-  	<time datetime="2021-07-01T07:21:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h2><h3 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h3>
-        
-          <a class="article-more-a" href="/2021/07/01/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/01/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-go内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">go内存管理</a>
-    </h1>
   
 
-        
-        <a href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="archive-article-date">
-  	<time datetime="2021-07-01T03:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a target="_blank" rel="noopener" href="https://ke.qq.com/webcourse/index.html#cid=2839764&term_id=102950688&taid=9884545112036564&type=1024&vid=5285890805835328863">go语言介绍</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8e0a3709b2ee">图解Go语言的gc算法</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html">Go内存分配器可视化指南【译】【精】</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html">TCMalloc 内存分配原理简析</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.codercto.com/a/99611.html">Go GC 20 问</a></p>
-<p><a target="_blank" rel="noopener" href="https://deepu.tech/memory-management-in-programming/">Demystifying memory management in modern programming languages</a></p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyNzM0MDk0Mg==&chksm=e863e655df146f437d107978c4632ddb4dafd29395e06d422d13c94861eeb993f2c7e079ea4a&idx=1&mid=2247483828&scene=21&sn=d8bcc352a0ad2fdb5e02f3a2c40c4b2b#wechat_redirect">Goroutine调度实例简要分析</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigwhite20xx/article/details/104809795">可视化Go内存管理</a></p>
-<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>go语言没有指针运算</p>
-<p>&amp; 取地址符</p>
-<p>*指针可以指向任何类型 以下面代码为例，指针指向int类型</p>
-        
-          <a class="article-more-a" href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">内存管理</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">GC</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+  
 
   
+  <div id="gitment-ctn"></div>
+<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
+<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: "Sun Jul 04 2021 14:40:42 GMT+0800",
+    owner: 'MR820',
+    repo: 'MR820.github.io',
+    oauth: {
+      client_id: 'b9615ac260b04335eeb1',
+      client_secret: 'b6999701fd47c0dc2c31cd156be1852faac07b81',
+    },
+  })
+  gitment.render('gitment-ctn')
+</script>
   
 
 
@@ -606,8 +532,8 @@ var _hmt = _hmt || [];
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
