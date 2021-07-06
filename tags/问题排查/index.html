@@ -6,33 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>go总结 | 邢志伟的笔记</title>
+  <title>Tag: 问题排查 | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="高级特性go语言介绍 图解Go语言的gc算法 Go内存分配器可视化指南【译】【精】 TCMalloc 内存分配原理简析 Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下">
-<meta property="og:type" content="article">
-<meta property="og:title" content="go总结">
-<meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="邢志伟的笔记">
+<meta property="og:url" content="https://note.wyxxt.org.cn/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
-<meta property="og:description" content="高级特性go语言介绍 图解Go语言的gc算法 Go内存分配器可视化指南【译】【精】 TCMalloc 内存分配原理简析 Go GC 20 问 Demystifying memory management in modern programming languages Goroutine调度实例简要分析 可视化Go内存管理 指针go语言没有指针运算 &amp; 取地址符 *指针可以指向任何类型 以下">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210705102926048.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/2021-2-19T155548.gif">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706113551727.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111029768.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111051915.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706094959970.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100746357.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100811783.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100850922.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111108034.png">
-<meta property="article:published_time" content="2021-07-01T03:30:11.000Z">
-<meta property="article:modified_time" content="2021-07-06T03:40:10.592Z">
 <meta property="article:author" content="devin">
-<meta property="article:tag" content="GC">
-<meta property="article:tag" content="内存管理">
-<meta property="article:tag" content="并发编程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210705102926048.png">
   
     <link rel="alternative" href="/atom.xml" title="邢志伟的笔记" type="application/atom+xml">
   
@@ -179,356 +161,60 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-go总结" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      go总结
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2021" class="archive-year">2021</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2021/07/06/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" class="archive-article-date">
+  	<time datetime="2021-07-06T06:40:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-06</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2021/07/06/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">go问题排查</a>
     </h1>
   
 
-        
-        <a href="/2021/07/01/go%E6%80%BB%E7%BB%93/" class="archive-article-date">
-  	<time datetime="2021-07-01T03:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="高级特性"><a href="#高级特性" class="headerlink" title="高级特性"></a>高级特性</h2><p><a target="_blank" rel="noopener" href="https://ke.qq.com/webcourse/index.html#cid=2839764&term_id=102950688&taid=9884545112036564&type=1024&vid=5285890805835328863">go语言介绍</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8e0a3709b2ee">图解Go语言的gc算法</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/11058651.html">Go内存分配器可视化指南【译】【精】</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jiujuan/p/13869547.html">TCMalloc 内存分配原理简析</a></a></p>
-<p><a target="_blank" rel="noopener" href="https://www.codercto.com/a/99611.html">Go GC 20 问</a></p>
-<p><a target="_blank" rel="noopener" href="https://deepu.tech/memory-management-in-programming/">Demystifying memory management in modern programming languages</a></p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyNzM0MDk0Mg==&chksm=e863e655df146f437d107978c4632ddb4dafd29395e06d422d13c94861eeb993f2c7e079ea4a&idx=1&mid=2247483828&scene=21&sn=d8bcc352a0ad2fdb5e02f3a2c40c4b2b#wechat_redirect">Goroutine调度实例简要分析</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigwhite20xx/article/details/104809795">可视化Go内存管理</a></p>
-<h3 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h3><p>go语言没有指针运算</p>
-<p>&amp; 取地址符</p>
-<p>*指针可以指向任何类型 以下面代码为例，指针指向int类型</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pi *<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span> = <span class="number">8</span></span><br><span class="line">pi = &amp;i</span><br></pre></td></tr></table></figure>
-
-<p>指针的作用，传递参数</p>
-<h3 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h3><p>Go运行时，Groutines（G）调度到逻辑处理器（P）上执行。每个P都有一台逻辑机器（M）。</p>
-<p>Go从1.5版本之后将默认的P的数量改为 = CPU core的数量（实际上还乘以了每个core上硬线程数量）</p>
-<span id="more"></span>
-
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210705102926048.png" alt="image-20210705102926048"></p>
-<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60df0205f346fb04d2d65b50">小知识 tcmalloc分配算法 (Thread Cache Malloc)</a></p>
-<h3 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h3><p>gc清理的是堆内存</p>
-<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60dd5a2ce401fd7e34279faa">JVM GC</a></p>
-<h4 id="根对象"><a href="#根对象" class="headerlink" title="根对象"></a>根对象</h4><p>在垃圾回收的术语中，由叫做根集合。他是垃圾回收器在标记过程中最先检查的对象，包括：</p>
-<ol>
-<li>全局变量：程序在编译期就能确定的哪些存在于程序整个生命周期的变量</li>
-<li>执行栈：每个goroutine都包含自己的执行栈，这些执行栈上的变量及指向分配的堆内存块的指针</li>
-<li>寄存器：寄存器的值可能表示一个指针，参与计算的这些指针可能指向某些赋值器分配的堆内存区块</li>
-</ol>
-<h4 id="三色标记法"><a href="#三色标记法" class="headerlink" title="三色标记法"></a>三色标记法</h4><p>Golang的GC算法主要是基于<code>标记-清扫(mark and sweep)</code>算法，并在此基础上做了改进。</p>
-<p>性能提升，减少了STW时间（stop the world）</p>
-<p>非分代的、非移动的、并发的、三色的标记清除垃圾收集器</p>
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/2021-2-19T155548.gif" alt="img"></p>
-<h4 id="go-gc流程"><a href="#go-gc流程" class="headerlink" title="go gc流程"></a>go gc流程</h4><table>
-<thead>
-<tr>
-<th>阶段</th>
-<th>说明</th>
-<th>赋值器状态</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>GCMark</td>
-<td>标记准备阶段，为并发标记做准备工作，启动写屏障</td>
-<td>STW</td>
-</tr>
-<tr>
-<td>GCMark</td>
-<td>扫描标记阶段，与赋值器并发执行，写屏障开启</td>
-<td>并发</td>
-</tr>
-<tr>
-<td>GCMark Termination</td>
-<td>标记终止阶段，保证一个周期内标记任务完成，停止写屏障</td>
-<td>STW</td>
-</tr>
-<tr>
-<td>GCoff</td>
-<td>内存清扫阶段，将需要回收的内存归还到堆中，写屏障关闭</td>
-<td>并发</td>
-</tr>
-<tr>
-<td>GCoff</td>
-<td>内存归还阶段，将过多的内存归还给操作系统，写屏障关闭</td>
-<td>并发</td>
-</tr>
-</tbody></table>
-<h4 id="混合写屏障（hybrid-write-barrier）"><a href="#混合写屏障（hybrid-write-barrier）" class="headerlink" title="混合写屏障（hybrid write barrier）"></a>混合写屏障（hybrid write barrier）</h4><p>由于标记操作和用户逻辑是并发执行的，用户逻辑会时常生成对象或者改变对象的引用。例如把⼀个对象标记为白色准备回收时，用户逻辑突然引用了它，或者又创建了新的对象。由于对象初始时都看为白色，会被 GC 回收掉，为了解决这个问题，引入了写屏障机制。</p>
-<p>GC 对扫描过后的对象使⽤操作系统写屏障功能来监控这段内存。如果这段内存发⽣引⽤改变，写屏障会给垃圾回收期发送⼀个信号，垃圾回收器捕获到信号后就知道这个对象发⽣改变，然后重新扫描这个对象，看看它的引⽤或者被引⽤是否改变。利⽤状态的重置实现当对象状态发⽣改变的时候，依然可以再次其引用的对象。</p>
-<h4 id="go-gc总结"><a href="#go-gc总结" class="headerlink" title="go gc总结"></a>go gc总结</h4><p>无分代、不整理、并发的三色标记法</p>
-<ol>
-<li>对象整理目的：是解决内存碎片问题，但是Go给予tcmalloc分配算法，基本没有碎片问题。<br>另外顺序内存分配器在多线程并不适用，整理内存对tcmalloc分配没有实质提升</li>
-<li>分代GC目标主要是针对新创建对象，不会频繁检查所有对象。但是Go会通过逃逸分析将大部分“新生”对象存储在栈上，需要长期保存的对象存在于堆中。栈会被回收，不需要GC。<br>Go的GC更专注于如何让GC和用户代码并发执行</li>
-</ol>
-<h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><p>reflect包</p>
-<p>在reflect包中，主要通过Typeof()和Valueof()两个方法来实现反射。两个方法相互结合，能够反射出被反射函数的全部信息。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;reflect&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Ref <span class="keyword">struct</span> &#123;</span><br><span class="line">	id   <span class="keyword">int</span></span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ref *Ref)</span> <span class="title">GetName</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;getName()函数&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ref *Ref)</span> <span class="title">GetNameById</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;getNameById()函数&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ref := <span class="built_in">new</span>(Ref)</span><br><span class="line">	t := reflect.TypeOf(ref)</span><br><span class="line">	v := reflect.ValueOf(ref)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line">	fmt.Println(v)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t.NumMethod(); i++ &#123;</span><br><span class="line">		fmt.Println(t.Method(i).Name)</span><br><span class="line">		v.Method(i).Call(<span class="literal">nil</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706113551727.png" alt="image-20210706113551727"></p>
-<h4 id="分支主题"><a href="#分支主题" class="headerlink" title="分支主题"></a>分支主题</h4><h3 id><a href="#" class="headerlink" title></a></h3><h3 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h3><h4 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h4><h4 id="waitgroup"><a href="#waitgroup" class="headerlink" title="waitgroup"></a>waitgroup</h4><h4 id="chan"><a href="#chan" class="headerlink" title="chan"></a>chan</h4><h4 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h4><p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/3477.html">go语言锁的实现</a></p>
-<h4 id="once"><a href="#once" class="headerlink" title="once"></a>once</h4><h4 id="sync-map"><a href="#sync-map" class="headerlink" title="sync.map"></a>sync.map</h4><h3 id="context"><a href="#context" class="headerlink" title="context"></a>context</h3><h3 id="CGO"><a href="#CGO" class="headerlink" title="CGO"></a>CGO</h3><h3 id="unsafe"><a href="#unsafe" class="headerlink" title="unsafe"></a>unsafe</h3><p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111029768.png" alt="image-20210701111029768"></p>
-<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h3><h3 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h3><h3 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h3><h3 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h3><h4 id="对齐方式"><a href="#对齐方式" class="headerlink" title="对齐方式"></a>对齐方式</h4><h4 id="填充方式"><a href="#填充方式" class="headerlink" title="填充方式"></a>填充方式</h4><h4 id="较少内存拷贝"><a href="#较少内存拷贝" class="headerlink" title="较少内存拷贝"></a>较少内存拷贝</h4><p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111051915.png" alt="image-20210701111051915"></p>
-<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><p>如何观察go gc</p>
-<ol>
-<li>GODEBUG=gctrace=1</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706094959970.png" alt="image-20210706094959970"></p>
-<table>
-<thead>
-<tr>
-<th>字段</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>gc 1</td>
-<td>第一个gc周期</td>
-</tr>
-<tr>
-<td>@0.005s</td>
-<td>程序开始后的0.005s</td>
-</tr>
-<tr>
-<td>4%</td>
-<td>改gc周期中cpu的使用率</td>
-</tr>
-<tr>
-<td>0.013</td>
-<td>标记开始时，STW所话费的时间（wall clock）</td>
-</tr>
-<tr>
-<td>0.72</td>
-<td>标记过程中，并发标记所花费的时间（wall clock）</td>
-</tr>
-<tr>
-<td>0.059</td>
-<td>标记终止时，STW所花费的时间（wall clock）</td>
-</tr>
-<tr>
-<td>0.10</td>
-<td>标记开始时，STW所花费的时间（cpu time）</td>
-</tr>
-<tr>
-<td>0.94</td>
-<td>标记过程中，标记辅助所花费的时间（cpu time）</td>
-</tr>
-<tr>
-<td>0.78</td>
-<td>标记过程中，并发标记所花费的时间（cpu time）</td>
-</tr>
-<tr>
-<td>0</td>
-<td>标记过程中，gc空闲的时间（cpu time）</td>
-</tr>
-<tr>
-<td>0.47</td>
-<td>标记终止时，STW所花费的时间（cpu time）</td>
-</tr>
-<tr>
-<td>4</td>
-<td>标记开始时，堆的大小的实际值</td>
-</tr>
-<tr>
-<td>4</td>
-<td>标记结束时，堆的大小的实际值</td>
-</tr>
-<tr>
-<td>1</td>
-<td>标记结束时，标记为存活的对象大小</td>
-</tr>
-<tr>
-<td>5</td>
-<td>标记结束时，堆的大小的预测值</td>
-</tr>
-<tr>
-<td>8</td>
-<td>P的数量</td>
-</tr>
-</tbody></table>
-<p>wall clock 是指开始执行到完成所经历的实际时间，包括其他程序和本程序所消耗的时间；</p>
-<p>cpu time 是指特定程序使用 cpu 的时间；它们存在以下关系：</p>
-<blockquote>
-<p>wall clock &lt; cpu time:充分利用多核</p>
-<p>wall clock ≈ cpu time:未并行执行</p>
-<p>wall clock &gt; cpu time:多核优势不明显</p>
-</blockquote>
-<ol start="2">
-<li>go tool trace</li>
-</ol>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">f, err := os.Create(<span class="string">&quot;trace.out&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">	err = trace.Start(f)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> trace.Stop()</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool trace trace.out</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100746357.png" alt="image-20210706100746357"></p>
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100811783.png" alt="image-20210706100811783"></p>
-<p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210706100850922.png" alt="image-20210706100850922"></p>
-<ol start="3">
-<li>debug.ReadGCStats</li>
-<li>runtime.ReadMemStats</li>
-</ol>
-<h4 id="查频繁GC"><a href="#查频繁GC" class="headerlink" title="查频繁GC"></a>查频繁GC</h4><h3 id="pprof"><a href="#pprof" class="headerlink" title="pprof"></a>pprof</h3><h4 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h4><h4 id="cpu过高"><a href="#cpu过高" class="headerlink" title="cpu过高"></a>cpu过高</h4><h4 id="程序慢"><a href="#程序慢" class="headerlink" title="程序慢"></a>程序慢</h4><h4 id="锁的争用"><a href="#锁的争用" class="headerlink" title="锁的争用"></a>锁的争用</h4><h4 id="程序阻塞"><a href="#程序阻塞" class="headerlink" title="程序阻塞"></a>程序阻塞</h4><p><img src="/2021/07/01/go%E6%80%BB%E7%BB%93/image-20210701111108034.png" alt="image-20210701111108034"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">GC</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">内存管理</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">并发编程</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">问题排查</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://note.wyxxt.org.cn/2021/07/01/go%E6%80%BB%E7%BB%93/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7"><span class="toc-number">1.</span> <span class="toc-text">高级特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%87%E9%92%88"><span class="toc-number">1.1.</span> <span class="toc-text">指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GMP%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">GMP模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">内存管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC"><span class="toc-number">1.4.</span> <span class="toc-text">GC</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.4.1.</span> <span class="toc-text">根对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="toc-number">1.4.2.</span> <span class="toc-text">三色标记法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.3.</span> <span class="toc-text">go gc流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C%EF%BC%88hybrid-write-barrier%EF%BC%89"><span class="toc-number">1.4.4.</span> <span class="toc-text">混合写屏障（hybrid write barrier）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#go-gc%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.5.</span> <span class="toc-text">go gc总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">1.5.</span> <span class="toc-text">反射</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%94%AF%E4%B8%BB%E9%A2%98"><span class="toc-number">1.5.1.</span> <span class="toc-text">分支主题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.6.</span> <span class="toc-text"></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="toc-number">1.7.</span> <span class="toc-text">并发编程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#goroutine%E8%B0%83%E5%BA%A6"><span class="toc-number">1.7.1.</span> <span class="toc-text">goroutine调度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#waitgroup"><span class="toc-number">1.7.2.</span> <span class="toc-text">waitgroup</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#chan"><span class="toc-number">1.7.3.</span> <span class="toc-text">chan</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mutex"><span class="toc-number">1.7.4.</span> <span class="toc-text">mutex</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#once"><span class="toc-number">1.7.5.</span> <span class="toc-text">once</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sync-map"><span class="toc-number">1.7.6.</span> <span class="toc-text">sync.map</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#context"><span class="toc-number">1.8.</span> <span class="toc-text">context</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CGO"><span class="toc-number">1.9.</span> <span class="toc-text">CGO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unsafe"><span class="toc-number">1.10.</span> <span class="toc-text">unsafe</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">逃逸分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC%E4%BC%98%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">GC优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96-sync-pool"><span class="toc-number">2.3.</span> <span class="toc-text">池化 sync.pool</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.4.</span> <span class="toc-text">内存分配模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F"><span class="toc-number">2.4.1.</span> <span class="toc-text">对齐方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A1%AB%E5%85%85%E6%96%B9%E5%BC%8F"><span class="toc-number">2.4.2.</span> <span class="toc-text">填充方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%83%E5%B0%91%E5%86%85%E5%AD%98%E6%8B%B7%E8%B4%9D"><span class="toc-number">2.4.3.</span> <span class="toc-text">较少内存拷贝</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">2.5.</span> <span class="toc-text">问题排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trace"><span class="toc-number">2.6.</span> <span class="toc-text">trace</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E9%A2%91%E7%B9%81GC"><span class="toc-number">2.6.1.</span> <span class="toc-text">查频繁GC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pprof"><span class="toc-number">2.7.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.7.1.</span> <span class="toc-text">内存泄漏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#cpu%E8%BF%87%E9%AB%98"><span class="toc-number">2.7.2.</span> <span class="toc-text">cpu过高</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E6%85%A2"><span class="toc-number">2.7.3.</span> <span class="toc-text">程序慢</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%81%E7%9A%84%E4%BA%89%E7%94%A8"><span class="toc-number">2.7.4.</span> <span class="toc-text">锁的争用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%98%BB%E5%A1%9E"><span class="toc-number">2.7.5.</span> <span class="toc-text">程序阻塞</span></a></li></ol></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
   
   
+    </div></section>
   
 
-  
-
-  
-
-  
-  <div id="gitment-ctn"></div>
-<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
-<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-  var gitment = new Gitment({
-    id: "Thu Jul 01 2021 11:30:11 GMT+0800",
-    owner: 'MR820',
-    repo: 'MR820.github.io',
-    oauth: {
-      client_id: 'b9615ac260b04335eeb1',
-      client_secret: 'b6999701fd47c0dc2c31cd156be1852faac07b81',
-    },
-  })
-  gitment.render('gitment-ctn')
-</script>
-  
+    
 
 
           </div>
@@ -602,9 +288,9 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
@@ -656,15 +342,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">GC</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">内存管理</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">并发编程</a>
+                <a href="javascript:void(0)" class="js-tag color3">GC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">问题排查</a>
               </li>
             
             <div class="clearfix"></div>
