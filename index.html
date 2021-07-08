@@ -169,6 +169,91 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-go优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/07/04/go%E4%BC%98%E5%8C%96/">go优化</a>
+    </h1>
+  
+
+        
+        <a href="/2021/07/04/go%E4%BC%98%E5%8C%96/" class="archive-article-date">
+  	<time datetime="2021-07-04T07:32:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h3><h3 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h3><h3 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h3><h3 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h3><h4 id="对齐方式"><a href="#对齐方式" class="headerlink" title="对齐方式"></a>对齐方式</h4><h4 id="填充方式"><a href="#填充方式" class="headerlink" title="填充方式"></a>填充方式</h4><h4 id="较少内存拷贝"><a href="#较少内存拷贝" class="headerlink" title="较少内存拷贝"></a>较少内存拷贝</h4><p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210701111051915.png" alt="image-20210701111051915"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">优化</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/07/04/go%E4%BC%98%E5%8C%96/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-go问题排查" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -189,11 +274,11 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><p>如何观察go gc</p>
+        <h1 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h1><p>如何观察go gc</p>
 <ol>
 <li>GODEBUG=gctrace=1</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go build main.go -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br><span class="line"></span><br><span class="line">GODEBUG=gctrace=1 go run main.go</span><br></pre></td></tr></table></figure>
         
           <a class="article-more-a" href="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/#more">more >></a>
         
@@ -231,183 +316,6 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-go优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/03/go%E4%BC%98%E5%8C%96/">go优化</a>
-    </h1>
-  
-
-        
-        <a href="/2021/07/03/go%E4%BC%98%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2021-07-03T07:32:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h3><h3 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h3><h3 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h3><h3 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h3><h4 id="对齐方式"><a href="#对齐方式" class="headerlink" title="对齐方式"></a>对齐方式</h4><h4 id="填充方式"><a href="#填充方式" class="headerlink" title="填充方式"></a>填充方式</h4><h4 id="较少内存拷贝"><a href="#较少内存拷贝" class="headerlink" title="较少内存拷贝"></a>较少内存拷贝</h4><p><img src="/2021/07/03/go%E4%BC%98%E5%8C%96/image-20210701111051915.png" alt="image-20210701111051915"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">优化</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/03/go%E4%BC%98%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-go并发编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">go并发编程</a>
-    </h1>
-  
-
-        
-        <a href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="archive-article-date">
-  	<time datetime="2021-07-03T07:21:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h3><p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60e51e5c7d9c0858338e3f22">GMP</a></p>
-<ol>
-<li>G代表一个goroutine对象，每次go调用的时候，都会创建一个G对象</li>
-<li>M代表一个线程，每次创建一个M的时候，都会有一个底层线程创建；所有的G任务，最终还是在M上执行</li>
-<li>P代表一个处理器，每一个运行的M都必须绑定一个P，就像线程必须在么一个CPU核上执行一样</li>
-</ol>
-        
-          <a class="article-more-a" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -660,6 +568,97 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/07/03/go%E8%AF%AD%E8%A8%80context/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-go并发编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">go并发编程</a>
+    </h1>
+  
+
+        
+        <a href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="archive-article-date">
+  	<time datetime="2021-07-03T02:21:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h2><p>gorountine是一个用户态级别的类线程，所以它的堆栈也必然是在用户态的调度器中进行管理的</p>
+<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60e51e5c7d9c0858338e3f22">GMP</a></p>
+<p>每个P中有一个G的队列（多个G）</p>
+<p>M是一个实际线程，需要与P绑定才能运行，运行态M数量等于CPU线程数量</p>
+<p>P是逻辑处理器，默认等于CPU线程数</p>
+        
+          <a class="article-more-a" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">展开全文 >></a>
         </p>
       
 

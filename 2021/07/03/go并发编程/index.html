@@ -8,16 +8,16 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>go并发编程 | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="goroutine调度GMP  G代表一个goroutine对象，每次go调用的时候，都会创建一个G对象 M代表一个线程，每次创建一个M的时候，都会有一个底层线程创建；所有的G任务，最终还是在M上执行 P代表一个处理器，每一个运行的M都必须绑定一个P，就像线程必须在么一个CPU核上执行一样">
+  <meta name="description" content="goroutine调度gorountine是一个用户态级别的类线程，所以它的堆栈也必然是在用户态的调度器中进行管理的 GMP 每个P中有一个G的队列（多个G） M是一个实际线程，需要与P绑定才能运行，运行态M数量等于CPU线程数量 P是逻辑处理器，默认等于CPU线程数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go并发编程">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
-<meta property="og:description" content="goroutine调度GMP  G代表一个goroutine对象，每次go调用的时候，都会创建一个G对象 M代表一个线程，每次创建一个M的时候，都会有一个底层线程创建；所有的G任务，最终还是在M上执行 P代表一个处理器，每一个运行的M都必须绑定一个P，就像线程必须在么一个CPU核上执行一样">
+<meta property="og:description" content="goroutine调度gorountine是一个用户态级别的类线程，所以它的堆栈也必然是在用户态的调度器中进行管理的 GMP 每个P中有一个G的队列（多个G） M是一个实际线程，需要与P绑定才能运行，运行态M数量等于CPU线程数量 P是逻辑处理器，默认等于CPU线程数">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/image-20210701111029768.png">
-<meta property="article:published_time" content="2021-07-03T07:21:08.000Z">
-<meta property="article:modified_time" content="2021-07-07T04:21:12.558Z">
+<meta property="article:published_time" content="2021-07-03T02:21:08.000Z">
+<meta property="article:modified_time" content="2021-07-08T03:14:21.253Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="并发">
 <meta name="twitter:card" content="summary">
@@ -187,42 +187,46 @@ var _hmt = _hmt || [];
 
         
         <a href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" class="archive-article-date">
-  	<time datetime="2021-07-03T07:21:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
+  	<time datetime="2021-07-03T02:21:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h3><p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60e51e5c7d9c0858338e3f22">GMP</a></p>
-<ol>
-<li>G代表一个goroutine对象，每次go调用的时候，都会创建一个G对象</li>
-<li>M代表一个线程，每次创建一个M的时候，都会有一个底层线程创建；所有的G任务，最终还是在M上执行</li>
-<li>P代表一个处理器，每一个运行的M都必须绑定一个P，就像线程必须在么一个CPU核上执行一样</li>
-</ol>
+        <h2 id="goroutine调度"><a href="#goroutine调度" class="headerlink" title="goroutine调度"></a>goroutine调度</h2><p>gorountine是一个用户态级别的类线程，所以它的堆栈也必然是在用户态的调度器中进行管理的</p>
+<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60e51e5c7d9c0858338e3f22">GMP</a></p>
+<p>每个P中有一个G的队列（多个G）</p>
+<p>M是一个实际线程，需要与P绑定才能运行，运行态M数量等于CPU线程数量</p>
+<p>P是逻辑处理器，默认等于CPU线程数</p>
 <span id="more"></span>
 
-<p>P的个数就是runtime.GOMAXPROCS(最大256)，启动时固定的，一般不修改，默认为cpu线程数</p>
-<p>每一个P保存着本地G任务队列，也有一个全局G任务队列</p>
+<p>G有阻塞代码，触发系统中断操作，而导致M被踢出CPU，</p>
+<p>G 代表一个Goroutine；存储了goroutine的执行stack信息、goroutine状态以及goroutine的任务函数等；另外G对象是可以重用的。</p>
+<p>M 代表一个操作系统的线程；M代表着真正的执行计算资源。在绑定有效的P后，进入schedule循环</p>
+<p>P 代表一个<strong>逻辑</strong>CPU处理器（在golang中这个是一个对cpu的抽象），通过runtime.GOMAXPROCS (numLogicalProcessors)可以控制多少P，但是通常P的数量设置是等于CPU线程数（runtime.GOMAXPROCS()）,不设置默认CPU线程数</p>
+<p>P的数量决定了系统内最大可并行的G的数量（前提：系统的物理cpu线程数&gt;=P的数量）；P的最大作用还是其拥有的各种G对象队列、链表、一些cache和状态。</p>
+<p><strong>GPM之间的关系如下：</strong></p>
 <ol>
-<li><pre><code>创建一个G对象，加入到本地队列或者全局队列
-</code></pre>
-</li>
-<li><pre><code>如果还有空闲的P，则创建一个M
-</code></pre>
-</li>
-<li><pre><code>M会启动一个底层线程，循环执行能找到的G任务
-</code></pre>
-</li>
-<li><pre><code>G任务的执行顺序是，先从本地队列找，本地没有则从全局队列找（一次性转移(全局G个数/P个数）个，再去其它P中找（一次性转移一半），
-</code></pre>
-</li>
-<li><pre><code>以上的G任务执行是按照队列顺序（也就是go调用的顺序）执行的。
-</code></pre>
-</li>
+<li>G实际运行在M上；</li>
+<li>M需要绑定P才能运行；</li>
+<li>程序中的多个M并不会同时都处于执行状态，最多只有cpu线程数个M在执行。</li>
+<li>每个P维护一个G队列；</li>
+<li>当一个G被创建出来，或者变为可执行状态时，就把他放到P的 可执行队列中；</li>
+<li>当一个G执行结束时，P会从队列中把该G取出；如果此时P的队列为空，即没有其他G可以执行，M也会尝试从全局队列拿一批G放到P的本地队列，全局没有再从其他P的本地队列偷一半放到自己P的本地队列（work-stealing调度算法）。</li>
 </ol>
-<h3 id="waitgroup"><a href="#waitgroup" class="headerlink" title="waitgroup"></a>waitgroup</h3><h3 id="chan"><a href="#chan" class="headerlink" title="chan"></a>chan</h3><h3 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h3><p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/3477.html">go语言锁的实现</a></p>
-<h3 id="once"><a href="#once" class="headerlink" title="once"></a>once</h3><h3 id="sync-map"><a href="#sync-map" class="headerlink" title="sync.map"></a>sync.map</h3><p><img src="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/image-20210701111029768.png" alt="image-20210701111029768"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>为了运行G0, M0需要持有上下文P。当你创建一个新的G的时候(go func()方法)，它会被放入P的queue（满了放入全局队列）。</p>
+<p>当你的G0执行阻塞的系统调用的时候(syscall)，阻塞的系统调用会触发中断(intercepted)，运行时会把M0从P中摘除(detach)，然后再创建一个新的操作系统的线程M1(如果没有空闲的线程可用的话)来服务于这个P。</p>
+<p>当系统调用<strong>继续</strong>的时候，线程M0被唤醒。尝试为G0捕获一个P上下文，可能从调度器的空闲P列表中获取。如果获取不成功，M会将G0放入调度器的可执行G队列中，等待其他P的查找。为了保证G的均衡性，非空闲的P会运行完自身的可执行G队列后，会周期性从调度器的可执行G队列中获取执行的G，甚至从其他的P的可执行G队列中掠夺G。M执行完P中的G不会空闲等待，而是会尝试去steal其他的G。现尝试全局，没有在随机一个P拿走部分G。work-steal（任务窃取算法）</p>
+<p> Go运行时会在下面的goroutine被阻塞的情况下运行另外一个goroutine：</p>
+<ul>
+<li>blocking syscall (for example opening a file),</li>
+<li>network input,</li>
+<li>channel operations,</li>
+<li>primitives in the sync package.</li>
+</ul>
+<h2 id="waitgroup"><a href="#waitgroup" class="headerlink" title="waitgroup"></a>waitgroup</h2><h2 id="chan"><a href="#chan" class="headerlink" title="chan"></a>chan</h2><h2 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h2><p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/3477.html">go语言锁的实现</a></p>
+<h2 id="once"><a href="#once" class="headerlink" title="once"></a>once</h2><h2 id="sync-map"><a href="#sync-map" class="headerlink" title="sync.map"></a>sync.map</h2><p><img src="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/image-20210701111029768.png" alt="image-20210701111029768"></p>
 
       
 
@@ -317,18 +321,18 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2021/07/03/go%E4%BC%98%E5%8C%96/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80context/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          go优化
+          go语言context
         
       </div>
     </a>
   
   
-    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">go语言unsafe</div>
+    <a href="/2021/07/01/go%E5%8F%8D%E5%B0%84/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">go反射</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -355,7 +359,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#goroutine%E8%B0%83%E5%BA%A6"><span class="toc-number">1.</span> <span class="toc-text">goroutine调度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#waitgroup"><span class="toc-number">2.</span> <span class="toc-text">waitgroup</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#chan"><span class="toc-number">3.</span> <span class="toc-text">chan</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mutex"><span class="toc-number">4.</span> <span class="toc-text">mutex</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#once"><span class="toc-number">5.</span> <span class="toc-text">once</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sync-map"><span class="toc-number">6.</span> <span class="toc-text">sync.map</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#goroutine%E8%B0%83%E5%BA%A6"><span class="toc-number">1.</span> <span class="toc-text">goroutine调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#waitgroup"><span class="toc-number">2.</span> <span class="toc-text">waitgroup</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chan"><span class="toc-number">3.</span> <span class="toc-text">chan</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mutex"><span class="toc-number">4.</span> <span class="toc-text">mutex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#once"><span class="toc-number">5.</span> <span class="toc-text">once</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sync-map"><span class="toc-number">6.</span> <span class="toc-text">sync.map</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -380,7 +384,7 @@ var _hmt = _hmt || [];
 <script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
   var gitment = new Gitment({
-    id: "Sat Jul 03 2021 15:21:08 GMT+0800",
+    id: "Sat Jul 03 2021 10:21:08 GMT+0800",
     owner: 'MR820',
     repo: 'MR820.github.io',
     oauth: {
