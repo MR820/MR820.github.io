@@ -20,11 +20,15 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100811783.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100850922.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210708150113829.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210708152739383.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709143711153.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709143855178.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/profile002.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144049481.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144756264.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144834053.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png">
 <meta property="article:published_time" content="2021-07-04T06:40:42.000Z">
-<meta property="article:modified_time" content="2021-07-08T08:14:34.687Z">
+<meta property="article:modified_time" content="2021-07-09T08:11:14.603Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
@@ -213,73 +217,73 @@ var _hmt = _hmt || [];
 <table>
 <thead>
 <tr>
-<th>字段</th>
-<th>含义</th>
+<th align="left">字段</th>
+<th align="left">含义</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>gc 1</td>
-<td>第一个gc周期</td>
+<td align="left">gc 1</td>
+<td align="left">第一个gc周期</td>
 </tr>
 <tr>
-<td>@0.005s</td>
-<td>程序开始后的0.005s</td>
+<td align="left">@0.005s</td>
+<td align="left">程序开始后的0.005s</td>
 </tr>
 <tr>
-<td>4%</td>
-<td>改gc周期中cpu的使用率</td>
+<td align="left">4%</td>
+<td align="left">改gc周期中cpu的使用率</td>
 </tr>
 <tr>
-<td>0.013</td>
-<td>标记开始时，STW所话费的时间（wall clock）</td>
+<td align="left">0.013</td>
+<td align="left">标记开始时，STW所花费的时间（wall clock）</td>
 </tr>
 <tr>
-<td>0.72</td>
-<td>标记过程中，并发标记所花费的时间（wall clock）</td>
+<td align="left">0.72</td>
+<td align="left">标记过程中，并发标记所花费的时间（wall clock）</td>
 </tr>
 <tr>
-<td>0.059</td>
-<td>标记终止时，STW所花费的时间（wall clock）</td>
+<td align="left">0.059</td>
+<td align="left">标记终止时，STW所花费的时间（wall clock）</td>
 </tr>
 <tr>
-<td>0.10</td>
-<td>标记开始时，STW所花费的时间（cpu time）</td>
+<td align="left">0.10</td>
+<td align="left">标记开始时，STW所花费的时间（cpu time）</td>
 </tr>
 <tr>
-<td>0.94</td>
-<td>标记过程中，标记辅助所花费的时间（cpu time）</td>
+<td align="left">0.94</td>
+<td align="left">标记过程中，标记辅助所花费的时间（cpu time）</td>
 </tr>
 <tr>
-<td>0.78</td>
-<td>标记过程中，并发标记所花费的时间（cpu time）</td>
+<td align="left">0.78</td>
+<td align="left">标记过程中，并发标记所花费的时间（cpu time）</td>
 </tr>
 <tr>
-<td>0</td>
-<td>标记过程中，gc空闲的时间（cpu time）</td>
+<td align="left">0</td>
+<td align="left">标记过程中，gc空闲的时间（cpu time）</td>
 </tr>
 <tr>
-<td>0.47</td>
-<td>标记终止时，STW所花费的时间（cpu time）</td>
+<td align="left">0.47</td>
+<td align="left">标记终止时，STW所花费的时间（cpu time）</td>
 </tr>
 <tr>
-<td>4</td>
-<td>标记开始时，堆的大小的实际值</td>
+<td align="left">4</td>
+<td align="left">标记开始时，堆的大小的实际值</td>
 </tr>
 <tr>
-<td>4</td>
-<td>标记结束时，堆的大小的实际值</td>
+<td align="left">4</td>
+<td align="left">标记结束时，堆的大小的实际值</td>
 </tr>
 <tr>
-<td>1</td>
-<td>标记结束时，标记为存活的对象大小</td>
+<td align="left">1</td>
+<td align="left">标记结束时，标记为存活的对象大小</td>
 </tr>
 <tr>
-<td>5</td>
-<td>标记结束时，堆的大小的预测值</td>
+<td align="left">5</td>
+<td align="left">标记结束时，堆的大小的预测值</td>
 </tr>
 <tr>
-<td>8</td>
-<td>P的数量</td>
+<td align="left">8</td>
+<td align="left">P的数量</td>
 </tr>
 </tbody></table>
 <p>wall clock 是指开始执行到完成所经历的实际时间，包括其他程序和本程序所消耗的时间；</p>
@@ -299,11 +303,7 @@ var _hmt = _hmt || [];
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100746357.png" alt="image-20210706100746357"></p>
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100811783.png" alt="image-20210706100811783"></p>
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100850922.png" alt="image-20210706100850922"></p>
-<ol start="3">
-<li>debug.ReadGCStats</li>
-<li>runtime.ReadMemStats</li>
-</ol>
-<h2 id="查频繁GC"><a href="#查频繁GC" class="headerlink" title="查频繁GC"></a>查频繁GC</h2><h1 id="pprof"><a href="#pprof" class="headerlink" title="pprof"></a>pprof</h1><p>开启pprof非常简单，只需要加入下面代码：</p>
+<h1 id="pprof"><a href="#pprof" class="headerlink" title="pprof"></a>pprof</h1><h2 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h2><p>开启pprof非常简单，只需要加入下面代码：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    _ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            log.Println(http.ListenAndServe(<span class="string">&quot;localhost:8081&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
 
 <p><a target="_blank" rel="noopener" href="http://localhost:8081/debug/pprof/">http://localhost:8081/debug/pprof/</a></p>
@@ -311,15 +311,64 @@ var _hmt = _hmt || [];
 <p>heap 堆内存使用情况</p>
 <p>goroutine 当前在运行的goroutine情况以及总数</p>
 <p>profile cpu耗时，会详细列出每个函数的好事</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 生成30s内监控文件</span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/profile</span><br><span class="line"></span><br><span class="line">// 生成heap监控文件</span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/heap</span><br><span class="line"></span><br><span class="line">// 生成goroutine监控文件</span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/goroutine</span><br><span class="line"></span><br><span class="line">// 查看前20</span><br><span class="line">(pprof) top 20</span><br><span class="line"></span><br><span class="line">// web查看svg</span><br><span class="line">(pprof) web</span><br><span class="line"></span><br><span class="line">// 生成png文件</span><br><span class="line">(pprof) png</span><br><span class="line"></span><br><span class="line">// 查看已经保存的profile文件</span><br><span class="line">go tool pprof profile /Users/xingzhiwei/pprof/pprof.samples.cpu.001.pb.gz</span><br></pre></td></tr></table></figure>
+<h2 id="交互命令"><a href="#交互命令" class="headerlink" title="交互命令"></a>交互命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成 cpu profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/profile</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成 heap profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/heap</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成 goroutine profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/goroutine</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成 block profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/block</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成 mutex profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/mutex</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看前20</span></span><br><span class="line">(pprof) top 20</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 直接定位相关耗时的代码</span></span><br><span class="line">list func_name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> web查看svg</span></span><br><span class="line">(pprof) web</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成png文件</span></span><br><span class="line">(pprof) png</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看已经保存的profile文件</span></span><br><span class="line">go tool pprof profile /Users/xingzhiwei/pprof/pprof.samples.cpu.001.pb.gz</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210708152739383.png" alt="image-20210708152739383"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看前20</span></span><br><span class="line">(pprof) top 20</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709143711153.png" alt="image-20210709143711153"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 直接定位相关耗时的代码</span></span><br><span class="line">list writePacket</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709143855178.png" alt="image-20210709143855178"></p>
 <embed src="https://drive.google.com/file/d/1gcNBtkg1MGHGk7-NQfny7LtHk40nQm6a/preview" width="640" height="480" allow="autoplay" type="image/svg+xml">
 
 
 
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/profile002.png" alt="pprof-profile"></p>
-<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><h2 id="cpu过高"><a href="#cpu过高" class="headerlink" title="cpu过高"></a>cpu过高</h2><h2 id="程序慢"><a href="#程序慢" class="headerlink" title="程序慢"></a>程序慢</h2><h2 id="锁的争用"><a href="#锁的争用" class="headerlink" title="锁的争用"></a>锁的争用</h2><h2 id="程序阻塞"><a href="#程序阻塞" class="headerlink" title="程序阻塞"></a>程序阻塞</h2><p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png" alt="image-20210701111108034"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 列出函数调用栈</span></span><br><span class="line">(pprof)traces</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144049481.png" alt="image-20210709144049481"></p>
+<h2 id="可视化操作界面（带火焰图）"><a href="#可视化操作界面（带火焰图）" class="headerlink" title="可视化操作界面（带火焰图）"></a>可视化操作界面（带火焰图）</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof --http=:8082 /Users/xingzhiwei/pprof/pprof.samples.cpu.004.pb.gz</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144756264.png" alt="image-20210709144756264"></p>
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144834053.png" alt="image-20210709144834053"></p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><ol>
+<li>cpu过高</li>
+<li>内存泄漏</li>
+<li>程序慢</li>
+<li>锁的争用</li>
+<li>程序阻塞</li>
+</ol>
+<p>查看cpu profile，聚焦长耗时函数</p>
+<p>如果有 runtime.mallocgc 这和内存分配与垃圾回收有关</p>
+<h2 id="查找内存泄漏"><a href="#查找内存泄漏" class="headerlink" title="查找内存泄漏"></a>查找内存泄漏</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成 heap profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/heap</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> -sample_index 参数，可以切换内存分析的类型</span></span><br><span class="line">go tool pprof -sample_index=alloc_space /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br><span class="line"></span><br><span class="line">go tool pprof --http=:8082 /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>inuse_space</td>
+<td>amount of memory allocated and npt released yet</td>
+</tr>
+<tr>
+<td>inuse_objects</td>
+<td>amount of objects allocated and not released yet</td>
+</tr>
+<tr>
+<td>alloc_space</td>
+<td>total amount of memory allocated (regardless of released)</td>
+</tr>
+<tr>
+<td>alloc_objects</td>
+<td>total amount of objects allocated (regardless of released)</td>
+</tr>
+</tbody></table>
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png" alt="image-20210701111108034"></p>
 
       
 
@@ -452,7 +501,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#trace"><span class="toc-number">1.</span> <span class="toc-text">trace</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E9%A2%91%E7%B9%81GC"><span class="toc-number">1.1.</span> <span class="toc-text">查频繁GC</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pprof"><span class="toc-number">2.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">内存泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cpu%E8%BF%87%E9%AB%98"><span class="toc-number">2.2.</span> <span class="toc-text">cpu过高</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E6%85%A2"><span class="toc-number">2.3.</span> <span class="toc-text">程序慢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81%E7%9A%84%E4%BA%89%E7%94%A8"><span class="toc-number">2.4.</span> <span class="toc-text">锁的争用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%98%BB%E5%A1%9E"><span class="toc-number">2.5.</span> <span class="toc-text">程序阻塞</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#trace"><span class="toc-number">1.</span> <span class="toc-text">trace</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pprof"><span class="toc-number">2.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AF"><span class="toc-number">2.1.</span> <span class="toc-text">开启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E4%BA%92%E5%91%BD%E4%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">交互命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E6%93%8D%E4%BD%9C%E7%95%8C%E9%9D%A2%EF%BC%88%E5%B8%A6%E7%81%AB%E7%84%B0%E5%9B%BE%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">可视化操作界面（带火焰图）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.</span> <span class="toc-text">解决问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.5.</span> <span class="toc-text">查找内存泄漏</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
