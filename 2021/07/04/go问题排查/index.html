@@ -8,12 +8,12 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>go问题排查 | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  1234go build main.go -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;mainGODEBUG&#x3D;gctrace&#x3D;1 go run main.go">
+  <meta name="description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  123456go build main.go -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;mainGODEBUG&#x3D;gctrace&#x3D;1 go run main.go# GODEBUG 参数还有 schedtrace&#x3D;1 scheddetail&#x3D;1 Go Runtime Scheduler 状态信息">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go问题排查">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
-<meta property="og:description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  1234go build main.go -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;mainGODEBUG&#x3D;gctrace&#x3D;1 go run main.go">
+<meta property="og:description" content="trace如何观察go gc  GODEBUG&#x3D;gctrace&#x3D;1  123456go build main.go -o mainGODEBUGE&#x3D;gctrace&#x3D;1 .&#x2F;mainGODEBUG&#x3D;gctrace&#x3D;1 go run main.go# GODEBUG 参数还有 schedtrace&#x3D;1 scheddetail&#x3D;1 Go Runtime Scheduler 状态信息">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706094959970.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210706100746357.png">
@@ -31,8 +31,9 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161928107.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161940501.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161954142.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/dashboard-by-type.png">
 <meta property="article:published_time" content="2021-07-04T06:40:42.000Z">
-<meta property="article:modified_time" content="2021-07-09T08:27:51.305Z">
+<meta property="article:modified_time" content="2021-07-12T03:34:36.886Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
@@ -213,7 +214,7 @@ var _hmt = _hmt || [];
 <ol>
 <li>GODEBUG=gctrace=1</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go build main.go -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br><span class="line"></span><br><span class="line">GODEBUG=gctrace=1 go run main.go</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">go build main.go -o main</span><br><span class="line">GODEBUGE=gctrace=1 ./main</span><br><span class="line"></span><br><span class="line">GODEBUG=gctrace=1 go run main.go</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> GODEBUG 参数还有 schedtrace=1 scheddetail=1 Go Runtime Scheduler 状态信息</span></span><br></pre></td></tr></table></figure>
 
 <span id="more"></span>
 
@@ -384,6 +385,7 @@ var _hmt = _hmt || [];
 <h1 id="prometheus"><a href="#prometheus" class="headerlink" title="prometheus"></a>prometheus</h1><p>prometheus 是 grafana 的插件，支持 go 监控的可视化</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;github.com/prometheus/client_golang/prometheus/promhttp&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		http.Handle(<span class="string">&quot;/metrics&quot;</span>, promhttp.Handler())</span><br><span class="line">		log.Println(http.ListenAndServe(<span class="string">&quot;localhost:8081&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">	&#125;()</span><br></pre></td></tr></table></figure>
 
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/dashboard-by-type.png" alt="image"></p>
 
       
 
