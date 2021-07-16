@@ -541,8 +541,7 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="content包"><a href="#content包" class="headerlink" title="content包"></a>content包</h1><p>在go服务器中，对于每个请求的request都是在单独的goroutine中进行的，处理一个request也可能涉及多个goroutine之间的交互， 使用context可以使开发者方便的在这些goroutine里传递request相关的数据、取消goroutine的signal或截止日期。</p>
-<p>Context是Golang官方定义的一个package，它定义了Context类型，里面包含了Deadline/Done/Err方法以及绑定到Context上的成员变量值Value，具体定义如下</p>
+        <h1 id="Go-Concurrency-Patterns-Context"><a href="#Go-Concurrency-Patterns-Context" class="headerlink" title="Go Concurrency Patterns: Context"></a>Go Concurrency Patterns: Context</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine 都应该快速退出，以便系统可以回收它们正在使用的任何资源。</p>
         
           <a class="article-more-a" href="/2021/07/03/go%E8%AF%AD%E8%A8%80context/#more">more >></a>
         
