@@ -6,15 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>Category: io | 邢志伟的笔记</title>
+  <title>redis | 邢志伟的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="邢志伟的笔记">
-<meta property="og:url" content="https://note.wyxxt.org.cn/categories/%E7%BD%91%E7%BB%9C/io/index.html">
+  <meta name="description" content="常见问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis">
+<meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/18/redis/index.html">
 <meta property="og:site_name" content="邢志伟的笔记">
+<meta property="og:description" content="常见问题">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/18/redis/5f5af5961e08531762ce9be0.png">
+<meta property="article:published_time" content="2021-07-18T07:32:03.000Z">
+<meta property="article:modified_time" content="2021-07-18T10:05:03.660Z">
 <meta property="article:author" content="devin">
+<meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/18/redis/5f5af5961e08531762ce9be0.png">
   
     <link rel="alternative" href="/atom.xml" title="邢志伟的笔记" type="application/atom+xml">
   
@@ -167,79 +174,293 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-redis" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/07/17/%E7%BD%91%E7%BB%9C%E4%B8%8EIO%E6%A8%A1%E5%9E%8B/" class="archive-article-date">
-  	<time datetime="2021-07-17T05:39:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-17</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/07/17/%E7%BD%91%E7%BB%9C%E4%B8%8EIO%E6%A8%A1%E5%9E%8B/">网络与IO模型</a>
+    <h1 class="article-title" itemprop="name">
+      redis
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/07/18/redis/" class="archive-article-date">
+  	<time datetime="2021-07-18T07:32:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><span id="more"></span>
+
+<p><img src="/2021/07/18/redis/5f5af5961e08531762ce9be0.png" alt="redis"></p>
+<h2 id="redis应用场景"><a href="#redis应用场景" class="headerlink" title="redis应用场景"></a>redis应用场景</h2><ol>
+<li><p>5大value类型：string list map set sorted_set</p>
+</li>
+<li><p>基本上就上缓存~!</p>
+</li>
+<li><p>token session 为了服务无状态，延伸思考，看你的项目有哪些数据结构或对象，在单机里需要单机锁，在多机需要分布式锁，抽出来放入redis中；</p>
+</li>
+<li><p>无锁化</p>
+</li>
+</ol>
+<h2 id="redis-是单线程还是多线程"><a href="#redis-是单线程还是多线程" class="headerlink" title="redis 是单线程还是多线程"></a>redis 是单线程还是多线程</h2><ol>
+<li><p>无论什么版本，工作线程就是一个</p>
+</li>
+<li><p>6.x高版本出现了IO对线程</p>
+</li>
+<li><p>使用上来说，没有变化</p>
+</li>
+<li><p>系统IO，真正理解面向IO模型编程的时候，有内核的事，从内核把数据搬运到程序里这是第一步，搬运回来的数据做的计算事第二步，netty</p>
+</li>
+<li><p>单线程，满足redis的穿行原子，只不过IO多线程后，把输入/输出放到更多的线程去并行，好处如下：1，执行时间缩短，更快2，更好的压榨系统及硬件的资源（网卡能够高效的使用）</p>
+<p>*客户端读取的顺序不能被保障</p>
+<p>在一个连接里（socket里）顺序可以被保障</p>
+</li>
+</ol>
+<h2 id="redis-存在线程安全的问题吗？为什么？"><a href="#redis-存在线程安全的问题吗？为什么？" class="headerlink" title="redis 存在线程安全的问题吗？为什么？"></a>redis 存在线程安全的问题吗？为什么？</h2><p>工作线程单线程串行</p>
+<p>redis可以保障内部串行</p>
+<p>外界使用的时候要保障，业务上自行保障顺序～！</p>
+<h2 id="缓存穿透问题"><a href="#缓存穿透问题" class="headerlink" title="缓存穿透问题"></a>缓存穿透问题</h2><p><strong>数据库根本没有这个数据</strong> </p>
+<p>数据库通常是架构的瓶颈，要让有效请求到大数据，无效请求过滤掉</p>
+<p>即便是放大前置环节的复杂度和成本</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>布隆过滤器 + key null</p>
+<p>同下</p>
+<h2 id="缓存击穿问题"><a href="#缓存击穿问题" class="headerlink" title="缓存击穿问题"></a>缓存击穿问题</h2><p><strong>热点key过期或者没有被缓存</strong></p>
+<p>redis没有，数据库有，大量并发</p>
+<h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
+<li><p>通过布隆过滤器</p>
+</li>
+<li><p>请求redis无数据，抢锁</p>
+</li>
+<li><p>抢到锁，访问数据库，更新redis</p>
+</li>
+<li><p>抢不到锁，等待锁释放抢到锁后，再次访问redis</p>
+</li>
+<li><p>3，4合并，抢到锁，访问redis，没有访问数据库，更新redis</p>
+</li>
+</ol>
+<h2 id="如何避免缓存雪崩"><a href="#如何避免缓存雪崩" class="headerlink" title="如何避免缓存雪崩"></a>如何避免缓存雪崩</h2><p><strong>大量热点key同时过期</strong></p>
+<p>核心问题就是避免DB无效/重复请求，涉及架构思想上的提升</p>
+<h3 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h3><p>同上</p>
+<h2 id="redis是怎么删除过期key的，缓存如何回收"><a href="#redis是怎么删除过期key的，缓存如何回收" class="headerlink" title="redis是怎么删除过期key的，缓存如何回收"></a>redis是怎么删除过期key的，缓存如何回收</h2><ol>
+<li>后台在轮询，分段分批的删除过期的key</li>
+<li>请求的时候判断时间已经过期了，删除</li>
+</ol>
+<p>尽量的把内存无用空间回收回来～！</p>
+<h2 id="缓存是如何淘汰的"><a href="#缓存是如何淘汰的" class="headerlink" title="缓存是如何淘汰的"></a>缓存是如何淘汰的</h2><p>空间不足的情况下：</p>
+<ol>
+<li>淘汰机制里有不允许淘汰 <strong>noeviction</strong></li>
+<li>lru/lfu/random/TTL</li>
+<li>全空间,如<strong>allkeys-lru</strong></li>
+<li>设置过过期的key的集合中，如<strong>volatile-lru</strong></li>
+</ol>
+<h2 id="如何进行缓存预热"><a href="#如何进行缓存预热" class="headerlink" title="如何进行缓存预热"></a>如何进行缓存预热</h2><ol>
+<li>提前把数据塞入redis（你知道哪些是热数据？肯定不知道，会造成线上很多数据没有缓存命中，80%预热，20%击穿，穿透，雪崩）</li>
+<li>开发逻辑上也要规避差集，会造成击穿，穿透，雪崩</li>
+<li>使用缓存击穿、穿透、雪崩一样的解决方案，一劳永逸</li>
+</ol>
+<h2 id="数据库和缓存不一致如何解决"><a href="#数据库和缓存不一致如何解决" class="headerlink" title="数据库和缓存不一致如何解决"></a>数据库和缓存不一致如何解决</h2><ol>
+<li>可以使用事务来解决，意义不大（为了解决一个问题，引入更大的一个问题，性能更低）读多写稀有的情况下</li>
+<li>Canel binlog（普遍使用的方案）redis + canel + mysql 客户端写操作mysql</li>
+<li>异步化 redis + mq + mysql 客户端写操作mq</li>
+<li>redis是缓存，更倾向于稍微的有时差</li>
+<li>还是减少DB的操作</li>
+<li>真的要落地，canel</li>
+</ol>
+<h2 id="主从不一致问题"><a href="#主从不一致问题" class="headerlink" title="主从不一致问题"></a>主从不一致问题</h2><ol>
+<li>redis是弱一致性，主从是异步的同步</li>
+<li>锁不能用主从的集群（单实力/分片集群/redlock）</li>
+<li>在配置中，提供了必须有多少个从连接能同步，你可以配置同步因子，趋向于强一致性</li>
+<li>wait 2 5000 小心</li>
+<li>3，4点有点违背redis的初衷了</li>
+</ol>
+<h2 id="redis持久化原理"><a href="#redis持久化原理" class="headerlink" title="redis持久化原理"></a>redis持久化原理</h2><ol>
+<li><p>当前线程阻塞服务（不聊） AOF  立刻写 1秒写 内核写</p>
+</li>
+<li><p>异步后台进程完成持久</p>
+<p>fork + copyonwrite</p>
+</li>
+</ol>
+<h2 id="redis有哪些持久化方式"><a href="#redis有哪些持久化方式" class="headerlink" title="redis有哪些持久化方式"></a>redis有哪些持久化方式</h2><ol>
+<li>两个方案及2+1方案，RDB，AOF，主从同步也算持久化；</li>
+<li>高版本：开启AOF，AOF是可以通过执行日志得到全部内存数据的方式，但是追求性能：<ol>
+<li>体积变大，重复无效指令 重写，后台用线程把内存的kv生成指令写个新的AOF</li>
+<li>4.x新增更有性能模式：把重写方式换成直接RDB放到AOF文件的头，再追加日志</li>
+</ol>
+</li>
+</ol>
+<h2 id="redis也扛不住了，万级流量会打到DB上，该怎么处理"><a href="#redis也扛不住了，万级流量会打到DB上，该怎么处理" class="headerlink" title="redis也扛不住了，万级流量会打到DB上，该怎么处理"></a>redis也扛不住了，万级流量会打到DB上，该怎么处理</h2><p>尽量的去分片</p>
+<p>解决方案见 击穿 穿透 缓存雪崩</p>
+<h2 id="redis中的三条指令式是什么，第三条指令到达后执行失败了，怎么处理"><a href="#redis中的三条指令式是什么，第三条指令到达后执行失败了，怎么处理" class="headerlink" title="redis中的三条指令式是什么，第三条指令到达后执行失败了，怎么处理"></a>redis中的三条指令式是什么，第三条指令到达后执行失败了，怎么处理</h2><p>事务没有回滚～！</p>
+<p>少使用事务吗，事务内的指令尽量的少和快</p>
+<h2 id="redis实现分布式锁的指令"><a href="#redis实现分布式锁的指令" class="headerlink" title="redis实现分布式锁的指令"></a>redis实现分布式锁的指令</h2><h2 id="为什么使用setnx"><a href="#为什么使用setnx" class="headerlink" title="为什么使用setnx"></a>为什么使用setnx</h2><ol>
+<li>好东西，原子性操作（不存在的情况下完成创建）</li>
+<li>如果要做分布式锁，就要用set k v nx ex(不存在，过期时间)</li>
+</ol>
+<h2 id="分布式锁实现，理论"><a href="#分布式锁实现，理论" class="headerlink" title="分布式锁实现，理论"></a>分布式锁实现，理论</h2><p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/1716.html">BASE</a> 等等</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">io</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">redis</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/网络//" class="article-tag-list-link color3">网络</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/网络/io//" class="article-tag-list-link color3">io</a>
+        			<a href="/categories/redis//" class="article-tag-list-link color1">redis</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://note.wyxxt.org.cn/2021/07/18/redis/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2021/07/17/%E7%BD%91%E7%BB%9C%E4%B8%8EIO%E6%A8%A1%E5%9E%8B/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">网络与IO模型</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">redis应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-%E6%98%AF%E5%8D%95%E7%BA%BF%E7%A8%8B%E8%BF%98%E6%98%AF%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">redis 是单线程还是多线程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-%E5%AD%98%E5%9C%A8%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%90%97%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.3.</span> <span class="toc-text">redis 存在线程安全的问题吗？为什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%97%AE%E9%A2%98"><span class="toc-number">1.4.</span> <span class="toc-text">缓存穿透问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.4.1.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.</span> <span class="toc-text">缓存击穿问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="toc-number">1.5.1.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="toc-number">1.6.</span> <span class="toc-text">如何避免缓存雪崩</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="toc-number">1.6.1.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9Fkey%E7%9A%84%EF%BC%8C%E7%BC%93%E5%AD%98%E5%A6%82%E4%BD%95%E5%9B%9E%E6%94%B6"><span class="toc-number">1.7.</span> <span class="toc-text">redis是怎么删除过期key的，缓存如何回收</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%98%AF%E5%A6%82%E4%BD%95%E6%B7%98%E6%B1%B0%E7%9A%84"><span class="toc-number">1.8.</span> <span class="toc-text">缓存是如何淘汰的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD"><span class="toc-number">1.9.</span> <span class="toc-text">如何进行缓存预热</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E7%BC%93%E5%AD%98%E4%B8%8D%E4%B8%80%E8%87%B4%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="toc-number">1.10.</span> <span class="toc-text">数据库和缓存不一致如何解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98"><span class="toc-number">1.11.</span> <span class="toc-text">主从不一致问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%8C%81%E4%B9%85%E5%8C%96%E5%8E%9F%E7%90%86"><span class="toc-number">1.12.</span> <span class="toc-text">redis持久化原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%9C%89%E5%93%AA%E4%BA%9B%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="toc-number">1.13.</span> <span class="toc-text">redis有哪些持久化方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E4%B9%9F%E6%89%9B%E4%B8%8D%E4%BD%8F%E4%BA%86%EF%BC%8C%E4%B8%87%E7%BA%A7%E6%B5%81%E9%87%8F%E4%BC%9A%E6%89%93%E5%88%B0DB%E4%B8%8A%EF%BC%8C%E8%AF%A5%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-number">1.14.</span> <span class="toc-text">redis也扛不住了，万级流量会打到DB上，该怎么处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E4%B8%AD%E7%9A%84%E4%B8%89%E6%9D%A1%E6%8C%87%E4%BB%A4%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E7%AC%AC%E4%B8%89%E6%9D%A1%E6%8C%87%E4%BB%A4%E5%88%B0%E8%BE%BE%E5%90%8E%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%E4%BA%86%EF%BC%8C%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-number">1.15.</span> <span class="toc-text">redis中的三条指令式是什么，第三条指令到达后执行失败了，怎么处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E6%8C%87%E4%BB%A4"><span class="toc-number">1.16.</span> <span class="toc-text">redis实现分布式锁的指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8setnx"><span class="toc-number">1.17.</span> <span class="toc-text">为什么使用setnx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%AE%9E%E7%8E%B0%EF%BC%8C%E7%90%86%E8%AE%BA"><span class="toc-number">1.18.</span> <span class="toc-text">分布式锁实现，理论</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
+  <div id="gitment-ctn"></div>
+<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
+<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: "Sun Jul 18 2021 15:32:03 GMT+0800",
+    owner: 'MR820',
+    repo: 'MR820.github.io',
+    oauth: {
+      client_id: 'b9615ac260b04335eeb1',
+      client_secret: 'b6999701fd47c0dc2c31cd156be1852faac07b81',
+    },
+  })
+  gitment.render('gitment-ctn')
+</script>
+  
 
 
           </div>
@@ -313,10 +534,10 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",
