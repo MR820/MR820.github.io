@@ -6,13 +6,13 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>go语言context | 邢志伟的笔记</title>
+  <title>go语言context | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Go Concurrency Patterns: Context介绍在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go语言context">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/index.html">
-<meta property="og:site_name" content="邢志伟的笔记">
+<meta property="og:site_name" content="xyxxt的笔记">
 <meta property="og:description" content="Go Concurrency Patterns: Context介绍在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png">
@@ -25,7 +25,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png">
   
-    <link rel="alternative" href="/atom.xml" title="邢志伟的笔记" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.jpeg">
