@@ -6,24 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>go语言context | xyxxt的笔记</title>
+  <title>Archives | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Go Concurrency Patterns: Context介绍在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine">
-<meta property="og:type" content="article">
-<meta property="og:title" content="go语言context">
-<meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="xyxxt的笔记">
+<meta property="og:url" content="https://note.wyxxt.org.cn/archives/page/2/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
-<meta property="og:description" content="Go Concurrency Patterns: Context介绍在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716145655205.png">
-<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716152958674.png">
-<meta property="article:published_time" content="2021-07-03T04:19:30.000Z">
-<meta property="article:modified_time" content="2021-07-16T10:04:37.329Z">
 <meta property="article:author" content="devin">
-<meta property="article:tag" content="context">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png">
   
     <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
@@ -176,90 +167,52 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-go语言context" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      go语言context
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2021" class="archive-year">2021</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="archive-article-date">
+  	<time datetime="2021-07-01T03:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-01</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">go内存管理</a>
     </h1>
   
 
-        
-        <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80context/" class="archive-article-date">
-  	<time datetime="2021-07-03T04:19:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Go-Concurrency-Patterns-Context"><a href="#Go-Concurrency-Patterns-Context" class="headerlink" title="Go Concurrency Patterns: Context"></a>Go Concurrency Patterns: Context</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在 Go 服务器中，每个传入请求都在其自己的 goroutine 中处理。请求处理程序通常会启动额外的 goroutine 来访问后端，例如数据库和 RPC 服务。处理请求的一组 goroutine 通常需要访问特定于请求的值，例如最终用户的身份、授权令牌和请求的截止日期。当请求被取消或超时时，处理该请求的所有 goroutine 都应该快速退出，以便系统可以回收它们正在使用的任何资源。</p>
-<span id="more"></span>
-
-<p>Google开发了一个<code>context</code>包，可以轻松地将请求范围的值、取消信号和截止日期跨 API 边界传递给处理请求所涉及的所有 goroutine。该包作为<a target="_blank" rel="noopener" href="https://golang.org/pkg/context">context</a>公开可用 。</p>
-<p><img src="/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png" alt="image-20210712113852151"></p>
-<h2 id="语境"><a href="#语境" class="headerlink" title="语境"></a>语境</h2><p>context包的核心是Context类型</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 上下文携带截止日期、取消信号和请求范围的值</span></span><br><span class="line"><span class="comment">// 跨越API边界。他的方法对于多goroutine同时使用是安全的</span></span><br><span class="line"><span class="keyword">type</span> Context <span class="keyword">interface</span>&#123;</span><br><span class="line">    <span class="comment">// Done returns a channel that is closed when this Context is canceled</span></span><br><span class="line">    <span class="comment">// or times out.</span></span><br><span class="line">    Done() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Err indicates why this context was canceled, after the Done channel</span></span><br><span class="line">    <span class="comment">// is closed.</span></span><br><span class="line">    Err() error</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Deadline returns the time when this Context will be canceled, if any.</span></span><br><span class="line">    Deadline() (deadline time.Time, ok <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Value returns the value associated with key or nil if none.</span></span><br><span class="line">    Value(key <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="派生上下文"><a href="#派生上下文" class="headerlink" title="派生上下文"></a>派生上下文</h2><p>该<code>context</code>包提供了从现有值中<em>派生出</em>新<code>Context</code>值的函数。这些值形成一棵树：当 a<code>Context</code>被取消时，所有<code>Contexts</code>从它派生的也被取消。</p>
-<p><code>Background</code>是任何<code>Context</code>树的根；它永远不会被取消：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Background returns an empty Context. It is never canceled, has no deadline,</span></span><br><span class="line"><span class="comment">// and has no values. Background is typically used in main, init, and tests,</span></span><br><span class="line"><span class="comment">// and as the top-level Context for incoming requests.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Background</span><span class="params">()</span> <span class="title">Context</span></span></span><br></pre></td></tr></table></figure>
-
-<p><code>WithCancel</code>和<code>WithTimeout</code>返回衍生<code>Context</code>值，可以比父<code>Context</code>更快地取消。当请求处理程序返回时，通常会取消与传入请求相关的<code>Context</code>。<code>WithCancel</code>还可用于在使用多个副本时取消冗余请求。<code>WithTimeout</code>可用于为后端服务器请求设置截止日期</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WithCancel returns a copy of parent whose Done channel is closed as soon as</span></span><br><span class="line"><span class="comment">// parent.Done is closed or cancel is called.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithCancel</span><span class="params">(parent Context)</span> <span class="params">(ctx Context, cancel CancelFunc)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// A CancelFunc cancels a Context.</span></span><br><span class="line"><span class="keyword">type</span> CancelFunc <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// WithTimeout returns a copy of parent whose Done channel is closed as soon as</span></span><br><span class="line"><span class="comment">// parent.Done is closed, cancel is called, or timeout elapses. The new</span></span><br><span class="line"><span class="comment">// Context&#x27;s Deadline is the sooner of now+timeout and the parent&#x27;s deadline, if</span></span><br><span class="line"><span class="comment">// any. If the timer is still running, the cancel function releases its</span></span><br><span class="line"><span class="comment">// resources.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithTimeout</span><span class="params">(parent Context, timeout time.Duration)</span> <span class="params">(Context, CancelFunc)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// WithDeadline returns a copy of the parent context with the deadline adjusted</span></span><br><span class="line"><span class="comment">// to be no later than d. If the parent&#x27;s deadline is already earlier than d,</span></span><br><span class="line"><span class="comment">// WithDeadline(parent, d) is semantically equivalent to parent. The returned</span></span><br><span class="line"><span class="comment">// context&#x27;s Done channel is closed when the deadline expires, when the returned</span></span><br><span class="line"><span class="comment">// cancel function is called, or when the parent context&#x27;s Done channel is</span></span><br><span class="line"><span class="comment">// closed, whichever happens first.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Canceling this context releases resources associated with it, so code should</span></span><br><span class="line"><span class="comment">// call cancel as soon as the operations running in this Context complete.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithDeadline</span><span class="params">(parent Context, d time.Time)</span> <span class="params">(Context, CancelFunc)</span></span></span><br></pre></td></tr></table></figure>
-
-<p><code>WithValue</code>提供了一种方法，将请求范围的值与<code>Context</code>关联</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WithValue returns a copy of parent whose Value method returns val for key.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithValue</span><span class="params">(parent Context, key <span class="keyword">interface</span>&#123;&#125;, val <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Context</span></span></span><br></pre></td></tr></table></figure>
-
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/7/3</span></span><br><span class="line"><span class="comment"> * Time 下午1:46</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	http.HandleFunc(<span class="string">&quot;/&quot;</span>, SayHello)</span><br><span class="line"></span><br><span class="line">	log.Fatalln(http.ListenAndServe(<span class="string">&quot;:8080&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SayHello</span><span class="params">(writer http.ResponseWriter, request *http.Request)</span></span> &#123;</span><br><span class="line">	fmt.Println(&amp;request)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> <span class="keyword">range</span> time.Tick(time.Second) &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-request.Context().Done():</span><br><span class="line">				fmt.Println(<span class="string">&quot;request is outgoing&quot;</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				fmt.Println(<span class="string">&quot;Current request is in progress&quot;</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line"></span><br><span class="line">	writer.Write([]<span class="keyword">byte</span>(<span class="string">&quot;Hi&quot;</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716145655205.png" alt="image-20210716145655205"></p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>在 Go 语言中 context 包允许您传递一个 “context” 到您的程序。 Context 如超时或截止日期（deadline）或通道，来指示停止运行和返回。例如，如果您正在执行一个 web 请求或运行一个系统命令，定义一个超时对生产级系统通常是个好主意。因为，如果您依赖的API运行缓慢，你不希望在系统上备份（back up）请求，因为它可能最终会增加负载并降低所有请求的执行效率。导致级联效应。这是超时或截止日期 context 派上用场的地方。</p>
-<h2 id="设计原理"><a href="#设计原理" class="headerlink" title="设计原理"></a>设计原理</h2><p>Go 语言中的每一个请求的都是通过一个单独的 Goroutine 进行处理的，HTTP/RPC 请求的处理器往往都会启动新的 Goroutine 访问数据库和 RPC 服务，我们可能会创建多个 Goroutine 来处理一次请求，而 <code>Context</code> 的主要作用就是在不同的 Goroutine 之间同步请求特定的数据、取消信号以及处理请求的截止日期。</p>
-<p><a target="_blank" rel="noopener" href="https://www.processon.com/view/link/60f134701efad41bbea74c9c">context包设计原理</a></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/7/3</span></span><br><span class="line"><span class="comment"> * Time 下午2:14</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), <span class="number">1</span>*time.Second)</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	<span class="keyword">go</span> helloHandle(ctx, <span class="number">2</span>*time.Second)</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> &lt;-ctx.Done(): <span class="comment">//此处阻塞2s</span></span><br><span class="line">		fmt.Println(<span class="string">&quot;Hello Handle&quot;</span>, ctx.Err())</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(<span class="number">3</span> * time.Second)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">helloHandle</span><span class="params">(ctx context.Context, duration time.Duration)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">		fmt.Println(ctx.Err())</span><br><span class="line">	<span class="keyword">case</span> &lt;-time.Tick(duration):</span><br><span class="line">		fmt.Println(<span class="string">&quot;process request with&quot;</span>, duration)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716152958674.png" alt="image-20210716152958674"></p>
-<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><h3 id="RPC调用"><a href="#RPC调用" class="headerlink" title="RPC调用"></a>RPC调用</h3><p>在主goroutine上有4个RPC，RPC2/3/4是并行请求的，我们这里希望在RPC2请求失败之后，直接返回错误，并且让RPC3/4停止继续计算。这个时候，就使用的到Context。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;context&quot;</span></span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">    <span class="string">&quot;github.com/pkg/errors&quot;</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Rpc</span><span class="params">(ctx context.Context, url <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    result := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    err := <span class="built_in">make</span>(<span class="keyword">chan</span> error)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// 进行RPC调用，并且返回是否成功，成功通过result传递成功信息，错误通过error传递错误信息</span></span><br><span class="line">        isSuccess := <span class="literal">true</span></span><br><span class="line">        <span class="keyword">if</span> isSuccess &#123;</span><br><span class="line">            result &lt;- <span class="number">1</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            err &lt;- errors.New(<span class="string">&quot;some error happen&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> &lt;- ctx.Done():</span><br><span class="line">            <span class="comment">// 其他RPC调用调用失败</span></span><br><span class="line">            <span class="keyword">return</span> ctx.Err()</span><br><span class="line">        <span class="keyword">case</span> e := &lt;- err:</span><br><span class="line">            <span class="comment">// 本RPC调用失败，返回错误信息</span></span><br><span class="line">            <span class="keyword">return</span> e</span><br><span class="line">        <span class="keyword">case</span> &lt;- result:</span><br><span class="line">            <span class="comment">// 本RPC调用成功，不返回错误信息</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ctx, cancel := context.WithCancel(context.Background())</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// RPC1调用</span></span><br><span class="line">    err := Rpc(ctx, <span class="string">&quot;http://rpc_1_url&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    wg := sync.WaitGroup&#123;&#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// RPC2调用</span></span><br><span class="line">    wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        err := Rpc(ctx, <span class="string">&quot;http://rpc_2_url&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            cancel()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// RPC3调用</span></span><br><span class="line">    wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        err := Rpc(ctx, <span class="string">&quot;http://rpc_3_url&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            cancel()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// RPC4调用</span></span><br><span class="line">    wg.Add(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        err := Rpc(ctx, <span class="string">&quot;http://rpc_4_url&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            cancel()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"> </span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="PipeLine"><a href="#PipeLine" class="headerlink" title="PipeLine"></a>PipeLine</h3><p>pipeline模式就是流水线模型，流水线上的几个工人，有n个产品，一个一个产品进行组装。其实pipeline模型的实现和Context并无关系，没有context我们也能用chan实现pipeline模型。但是对于整条流水线的控制，则是需要使用上Context的。</p>
-<h3 id="超时请求"><a href="#超时请求" class="headerlink" title="超时请求"></a>超时请求</h3><p>我们发送RPC请求的时候，往往希望对这个请求进行一个超时的限制。当一个RPC请求超过10s的请求，自动断开。当然我们使用CancelContext，也能实现这个功能（开启一个新的goroutine，这个goroutine拿着cancel函数，当时间到了，就调用cancel函数）。</p>
-<p>鉴于这个需求是非常常见的，context包也实现了这个需求：timerCtx。具体实例化的方法是 WithDeadline 和 WithTimeout。</p>
-<p>具体的timerCtx里面的逻辑也就是通过time.AfterFunc来调用ctx.cancel的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;context&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ctx, cancel := context.WithTimeout(context.Background(), <span class="number">50</span>*time.Millisecond)</span><br><span class="line">    <span class="keyword">defer</span> cancel()</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> &lt;-time.After(<span class="number">1</span> * time.Second):</span><br><span class="line">        fmt.Println(<span class="string">&quot;overslept&quot;</span>)</span><br><span class="line">    <span class="keyword">case</span> &lt;-ctx.Done():</span><br><span class="line">        fmt.Println(ctx.Err()) <span class="comment">// prints &quot;context deadline exceeded&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>http的客户端里面加上timeout也是一个常见的办法</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">uri := <span class="string">&quot;https://httpbin.org/delay/3&quot;</span></span><br><span class="line">req, err := http.NewRequest(<span class="string">&quot;GET&quot;</span>, uri, <span class="literal">nil</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatalf(<span class="string">&quot;http.NewRequest() failed with &#x27;%s&#x27;\n&quot;</span>, err)</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">ctx, _ := context.WithTimeout(context.Background(), time.Millisecond*<span class="number">100</span>)</span><br><span class="line">req = req.WithContext(ctx)</span><br><span class="line"> </span><br><span class="line">resp, err := http.DefaultClient.Do(req)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatalf(<span class="string">&quot;http.DefaultClient.Do() failed with:\n&#x27;%s&#x27;\n&quot;</span>, err)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> resp.Body.Close()</span><br></pre></td></tr></table></figure>
-
-<h3 id="HTTP服务器的request互相传递数据"><a href="#HTTP服务器的request互相传递数据" class="headerlink" title="HTTP服务器的request互相传递数据"></a>HTTP服务器的request互相传递数据</h3><p>context还提供了valueCtx的数据结构。</p>
-<p>这个valueCtx最经常使用的场景就是在一个http服务器中，在request中传递一个特定值，比如有一个中间件，做cookie验证，然后把验证后的用户名存放在request中。</p>
-<p>我们可以看到，官方的request里面是包含了Context的，并且提供了WithContext的方法进行context的替换。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">    <span class="string">&quot;context&quot;</span></span><br><span class="line">)</span><br><span class="line"> </span><br><span class="line"><span class="keyword">type</span> FooKey <span class="keyword">string</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> UserName = FooKey(<span class="string">&quot;user-name&quot;</span>)</span><br><span class="line"><span class="keyword">var</span> UserId = FooKey(<span class="string">&quot;user-id&quot;</span>)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(next http.HandlerFunc)</span> <span class="title">http</span>.<span class="title">HandlerFunc</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">        ctx := context.WithValue(r.Context(), UserId, <span class="string">&quot;1&quot;</span>)</span><br><span class="line">        ctx2 := context.WithValue(ctx, UserName, <span class="string">&quot;yejianfeng&quot;</span>)</span><br><span class="line">        next(w, r.WithContext(ctx2))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetUserName</span><span class="params">(context context.Context)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> ret, ok := context.Value(UserName).(<span class="keyword">string</span>); ok &#123;</span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetUserId</span><span class="params">(context context.Context)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> ret, ok := context.Value(UserId).(<span class="keyword">string</span>); ok &#123;</span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(<span class="string">&quot;welcome: &quot;</span>))</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(GetUserId(r.Context())))</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(<span class="string">&quot; &quot;</span>))</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(GetUserName(r.Context())))</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.Handle(<span class="string">&quot;/&quot;</span>, foo(test))</span><br><span class="line">    http.ListenAndServe(<span class="string">&quot;:8080&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">context</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">内存管理</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">GC</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -272,141 +225,20 @@ var _hmt = _hmt || [];
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80cgo/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          go语言cgo
-        
-      </div>
-    </a>
   
   
-    <a href="/2021/07/03/go%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">go并发编程</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Go-Concurrency-Patterns-Context"><span class="toc-number">1.</span> <span class="toc-text">Go Concurrency Patterns: Context</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">语境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">1.3.</span> <span class="toc-text">派生上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.5.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86"><span class="toc-number">1.6.</span> <span class="toc-text">设计原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.7.</span> <span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC%E8%B0%83%E7%94%A8"><span class="toc-number">1.7.1.</span> <span class="toc-text">RPC调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PipeLine"><span class="toc-number">1.7.2.</span> <span class="toc-text">PipeLine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B6%85%E6%97%B6%E8%AF%B7%E6%B1%82"><span class="toc-number">1.7.3.</span> <span class="toc-text">超时请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84request%E4%BA%92%E7%9B%B8%E4%BC%A0%E9%80%92%E6%95%B0%E6%8D%AE"><span class="toc-number">1.7.4.</span> <span class="toc-text">HTTP服务器的request互相传递数据</span></a></li></ol></li></ol></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
-  <div id="gitment-ctn"></div>
-<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
-<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-  var gitment = new Gitment({
-    id: "Sat Jul 03 2021 12:19:30 GMT+0800",
-    owner: 'MR820',
-    repo: 'MR820.github.io',
-    oauth: {
-      client_id: 'b9615ac260b04335eeb1',
-      client_secret: 'b6999701fd47c0dc2c31cd156be1852faac07b81',
-    },
-  })
-  gitment.render('gitment-ctn')
-</script>
+    
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/archives/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
+    </nav>
   
 
 
@@ -481,8 +313,8 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
