@@ -8,16 +8,16 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>秒杀系统 | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="什么是秒杀短时间（瞬时），大量请求，买一个（数量少）商品 解决：高并发（读，写） 秒杀系统目标稳：高可用，系统稳定的提供服务 准：超卖，数据一致性问题 快：高性能（优化的点） 防：防止无效请求到服务 架构原则 减少用户和服务端的交互 数据要少：请求参数和响应参数要少，降低对网络的占用，降低对cpu的消耗（参数的压缩和解压），对IO数据库。非必要的信息不要来回传 请求数要少：合并请求 路径要短： 依">
+  <meta name="description" content="什么是秒杀短时间（瞬时），大量请求，买一个（数量少）商品 解决：高并发（读，写）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="秒杀系统">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/22/%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
-<meta property="og:description" content="什么是秒杀短时间（瞬时），大量请求，买一个（数量少）商品 解决：高并发（读，写） 秒杀系统目标稳：高可用，系统稳定的提供服务 准：超卖，数据一致性问题 快：高性能（优化的点） 防：防止无效请求到服务 架构原则 减少用户和服务端的交互 数据要少：请求参数和响应参数要少，降低对网络的占用，降低对cpu的消耗（参数的压缩和解压），对IO数据库。非必要的信息不要来回传 请求数要少：合并请求 路径要短： 依">
+<meta property="og:description" content="什么是秒杀短时间（瞬时），大量请求，买一个（数量少）商品 解决：高并发（读，写）">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/22/%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F/60f936df0791296b4c238ce3.png">
 <meta property="article:published_time" content="2021-07-22T09:10:46.000Z">
-<meta property="article:modified_time" content="2021-07-23T03:38:07.103Z">
+<meta property="article:modified_time" content="2021-07-28T07:20:42.276Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="秒杀">
 <meta name="twitter:card" content="summary">
@@ -196,6 +196,8 @@ var _hmt = _hmt || [];
       
         <h2 id="什么是秒杀"><a href="#什么是秒杀" class="headerlink" title="什么是秒杀"></a>什么是秒杀</h2><p>短时间（瞬时），大量请求，买一个（数量少）商品</p>
 <p>解决：高并发（读，写）</p>
+<span id="more"></span>
+
 <h2 id="秒杀系统目标"><a href="#秒杀系统目标" class="headerlink" title="秒杀系统目标"></a>秒杀系统目标</h2><p>稳：高可用，系统稳定的提供服务</p>
 <p>准：超卖，数据一致性问题</p>
 <p>快：高性能（优化的点）</p>
@@ -312,6 +314,15 @@ var _hmt = _hmt || [];
 
   
 <nav id="article-nav">
+  
+    <a href="/2021/07/24/elastic/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          elastic
+        
+      </div>
+    </a>
   
   
     <a href="/2021/07/18/redis/" id="article-nav-older" class="article-nav-link-wrap">
@@ -554,6 +565,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">秒杀</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">elastic</a>
               </li>
             
             <div class="clearfix"></div>
