@@ -191,35 +191,9 @@ var _hmt = _hmt || [];
       
         <h2 id="本地缓存的意义"><a href="#本地缓存的意义" class="headerlink" title="本地缓存的意义"></a>本地缓存的意义</h2><p>很多人可能想问，为什么有了redis中间件这种分布式缓存，还需要讨论本地缓存有什么意义？</p>
 <p>本地缓存是在程序进程中专门运行的线程或协程维护的，会随着程序的关闭而失效。</p>
-<!--moren-->
-
-<p>应用不到一定体量，基本没意义。当碰到高并发问题时，就有了意义。高并发可以理解为短时间有大量请求，流量从浏览器-&gt;DNS-&gt;CDN-&gt;负载均衡-&gt;网关-&gt;服务-&gt;IO。</p>
-<p>后端程序员可以操作的节点有CDN、负载均衡、网关、服务、IO。</p>
-<p><img src="/2021/08/01/%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/image-20210801202641566.png" alt="image-20210801202641566"></p>
-<h3 id="cdn"><a href="#cdn" class="headerlink" title="cdn"></a>cdn</h3><p>假设有1000请求过来，900个是请求静态数据。CDN已经有缓存，直接就近从CDN返回响应。进入负载均衡的时候就只剩下100个。</p>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>负载均衡有两大类，一类是 lvs-dr 软件 这一类基于2层的负载均衡，不涉及到应用层的，速度快，效率高。一类是 nginx 这一类实际会建立连接的应用层负载均衡。</p>
-<p><strong>此处有一个得分点</strong>，并发量在1万左右使用 ngixn ，当nginx 不够时，上 lvs 。当 lvs 不够时，上 F5 硬件。当 F5 硬件都不够时了？</p>
-<p>他们都是主从集群，上2个F5集群，有不同的IP。</p>
-<p>此处就有可能涉及到就近原则。DNS 根据请求来自的地域，将域名映射到就近的机房IP。</p>
-<p>如 Tengine 可以使用 lua 脚本，访问缓存也可以过滤掉无效请求或直接给出相应。比如秒杀场景下，Tengine缓存了商品库存。请求过来，当库存为0时，直接返回。同时修改商品页面路由规则，路由到购买按钮为灰色的页面。</p>
-<p>上面这个环节，就可以使用本地缓存或者redis缓存也可混用。假设某个秒杀商品有1000个库存，预测并发1000k。1个Tengine肯定扛不住，我们设定一个Tengine抗10k的并发，需要100个Tengine做负载均衡。如果每个Tengine本地缓存时1000库存的话，有效打到下一层的流量就是100k，还是很大。如果<strong>本地缓存</strong>50， Tengine 使用 lua 脚本定期同步redis更新本地缓存，规则如下，redis 中的库存数量 / 20 并向上取整。50 * 100 为 5 k，最大有5 k的有效请求打到下一层。这样也同时防止了少卖的问题。超卖问题和订单过期问题让服务层去处理。此时的服务层已经有1000 k 降到了 5k 并发， redis 的并发访问上限在 100 k。完全可以承载。</p>
-<p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/1884.html">c10k问题</a></p>
-<p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/1886.html">订单过期处理方案</a></p>
-<h3 id="网关"><a href="#网关" class="headerlink" title="网关"></a>网关</h3><p>鉴权，流量控制，熔断降级</p>
-<h3 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h3><p>本地缓存 和 redis 中间件缓存，原理同负载均衡层一样。同时本地缓存访问速度一定快于 访问 redis 中间件。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>问什么有了分布式缓存中间件如redis，还需要有本地缓存？</p>
-<ol>
-<li>为了降低 redis 的压力</li>
-<li>速度快</li>
-</ol>
-<h2 id="go-cache"><a href="#go-cache" class="headerlink" title="go-cache"></a>go-cache</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>go-cache 是一种类似于 memcached 的内存键：值存储/缓存，适用于在单机上运行的应用程序。它的主要优点是，本质上是一个<code>map[string]interface&#123;&#125;</code>具有过期时间的线程安全，它不需要序列化或通过网络传输其内容。</p>
-<p>任何对象都可以在给定的持续时间内或永远存储，并且缓存可以被多个 goroutine 安全地使用。</p>
-<p>虽然 go-cache 并不打算用作持久性数据存储，但整个缓存可以保存到文件中并从文件中加载（<code>c.Items()</code>用于检索项目映射以进行序列化，并<code>NewFrom()</code>从反序列化的项目中创建缓存）以恢复从停机时间很快。</p>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/1</span></span><br><span class="line"><span class="comment"> * Time 下午9:24</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/patrickmn/go-cache&quot;</span></span><br><span class="line">	<span class="string">&quot;reflect&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyStruct <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建一个默认过期时间为 5 分钟的缓存，并且 每 10 分钟清除一次过期的项目</span></span><br><span class="line">	c := cache.New(<span class="number">5</span>*time.Minute, <span class="number">10</span> * time.Minute)</span><br><span class="line">	c.Set(<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, cache.DefaultExpiration)</span><br><span class="line">	c.Set(<span class="string">&quot;baz&quot;</span>, <span class="number">42</span>, cache.NoExpiration)</span><br><span class="line">	foo, found := c.Get(<span class="string">&quot;foo&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> found &#123;</span><br><span class="line">		fmt.Println(foo)</span><br><span class="line">		fmt.Println(reflect.TypeOf(foo))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	my := MyStruct&#123;</span><br><span class="line">		name: <span class="string">&quot;xzw&quot;</span>,</span><br><span class="line">		age:  <span class="number">14</span>,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c.Set(<span class="string">&quot;foo&quot;</span>, my, cache.DefaultExpiration)</span><br><span class="line">	<span class="keyword">if</span> x, found := c.Get(<span class="string">&quot;foo&quot;</span>); found &#123;</span><br><span class="line">		fmt.Println(reflect.TypeOf(x))</span><br><span class="line">		foo := x.(MyStruct)</span><br><span class="line">		fmt.Println(foo)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>github.com/patrickmn/go-cache</p>
-<p><img src="/2021/08/01/%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/image-20210801234854772.png" alt="image-20210801234854772"></p>
-
+        
+          <a class="article-more-a" href="/2021/08/01/%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/#more">more >></a>
+        
       
 
       
@@ -639,140 +613,11 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="配置中心对比"><a href="#配置中心对比" class="headerlink" title="配置中心对比"></a>配置中心对比</h2><table>
-<thead>
-<tr>
-<th>功能点</th>
-<th>优先级</th>
-<th>ctrip apollo</th>
-<th>alibaba nacos</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>静态配置管理</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>动态配置管理</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>统一管理</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>多环境</td>
-<td>中</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>本地配置缓存</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>配置生效时间</td>
-<td>高</td>
-<td>支持(HTTP长轮询1s内)</td>
-<td>支持(HTTP长轮询1s内)</td>
-</tr>
-<tr>
-<td>版本管理</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>权限管理</td>
-<td>中</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>灰度发布</td>
-<td>中</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>配置回滚</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>监听查询</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>多语言</td>
-<td>低</td>
-<td>主流语言，Open API</td>
-<td>主流语言，Open API</td>
-</tr>
-<tr>
-<td>配置格式校验</td>
-<td>高</td>
-<td>支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>配置界面</td>
-<td>中</td>
-<td>统一界面</td>
-<td>统一界面</td>
-</tr>
-<tr>
-<td>业务系统侵入性</td>
-<td>高</td>
-<td>侵入性弱</td>
-<td>侵入性弱</td>
-</tr>
-<tr>
-<td>单机读（QPS）</td>
-<td>高</td>
-<td>9000</td>
-<td>15000</td>
-</tr>
-<tr>
-<td>单机写</td>
-<td>高</td>
-<td>1100</td>
-<td>1800</td>
-</tr>
-<tr>
-<td>集群读（QPS）3机</td>
-<td>高</td>
-<td>27000</td>
-<td>45000</td>
-</tr>
-<tr>
-<td>集群写 3机</td>
-<td>高</td>
-<td>3300</td>
-<td>5600</td>
-</tr>
-</tbody></table>
-<h2 id="apollo架构图"><a href="#apollo架构图" class="headerlink" title="apollo架构图"></a>apollo架构图</h2><p><img src="/2021/08/01/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/image-20210803175045909.png" alt="image-20210803175045909"></p>
-<p><img src="file:///Users/xingzhiwei/hexo/source/_posts/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/image-20210803174456656.png?lastModify=1627984055" alt="image-20210803174456656"></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo">apollo源码</a></p>
-<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><p>apollo.go</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/4/26</span></span><br><span class="line"><span class="comment"> * Time 下午2:53</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> apollo</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/agcache/memory&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/component/log&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/env/config&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> client *agollo.Client</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// apollo配置</span></span><br><span class="line">	c := &amp;config.AppConfig&#123;</span><br><span class="line">		AppID:          <span class="string">&quot;G02-go-test&quot;</span>,</span><br><span class="line">		Cluster:        <span class="string">&quot;default&quot;</span>, <span class="comment">// 一次限制一个集群数据</span></span><br><span class="line">		NamespaceName:  <span class="string">&quot;redis,application&quot;</span>,</span><br><span class="line">		IP:             <span class="string">&quot;http://d-apollo.yundasys.com:30224&quot;</span>,</span><br><span class="line">		IsBackupConfig: <span class="literal">false</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	agollo.SetCache(&amp;memory.DefaultCacheFactory&#123;&#125;)</span><br><span class="line">	agollo.SetLogger(&amp;log.DefaultLogger&#123;&#125;)</span><br><span class="line">	<span class="comment">// 创建客户端</span></span><br><span class="line">	cli, err := agollo.StartWithConfig(<span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(appConfig *config.AppConfig, err error)</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> c, <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	client = cli</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetClient</span><span class="params">()</span> *<span class="title">agollo</span>.<span class="title">Client</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> client</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>main.go</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/4/26</span></span><br><span class="line"><span class="comment"> * Time 下午2:51</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br><span class="line">	<span class="string">&quot;imooc.com/ccmouse/learngo/apollo/apollo&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	r := gin.Default()</span><br><span class="line">	client := apollo.GetClient()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		cache := client.GetConfigCache(<span class="string">&quot;redis&quot;</span>)</span><br><span class="line">		val,_ := cache.Get(<span class="string">&quot;host&quot;</span>)</span><br><span class="line">		c.JSON(<span class="number">200</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: val&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
+        <h2 id="什么是配置中心"><a href="#什么是配置中心" class="headerlink" title="什么是配置中心"></a>什么是配置中心</h2><p>配置中心，顾名思义，将配置中心化，说白了就是将配置从应用中抽取出来，统一管理，优雅的解决了配置的动态变更、权限管理、持久化、运维成本等问题。</p>
+<p>配置与应用程序隔离开，单独管理配置。 总得来说，配置中心就是一种统一管理各种应用配置的基础服务组件。</p>
+        
+          <a class="article-more-a" href="/2021/08/01/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/#more">more >></a>
+        
       
 
       
