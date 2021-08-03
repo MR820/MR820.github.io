@@ -639,7 +639,140 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="配置中心对比"><a href="#配置中心对比" class="headerlink" title="配置中心对比"></a>配置中心对比</h2><table>
+<thead>
+<tr>
+<th>功能点</th>
+<th>优先级</th>
+<th>ctrip apollo</th>
+<th>alibaba nacos</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静态配置管理</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>动态配置管理</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>统一管理</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>多环境</td>
+<td>中</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>本地配置缓存</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>配置生效时间</td>
+<td>高</td>
+<td>支持(HTTP长轮询1s内)</td>
+<td>支持(HTTP长轮询1s内)</td>
+</tr>
+<tr>
+<td>版本管理</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>权限管理</td>
+<td>中</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>灰度发布</td>
+<td>中</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>配置回滚</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>监听查询</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>多语言</td>
+<td>低</td>
+<td>主流语言，Open API</td>
+<td>主流语言，Open API</td>
+</tr>
+<tr>
+<td>配置格式校验</td>
+<td>高</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>配置界面</td>
+<td>中</td>
+<td>统一界面</td>
+<td>统一界面</td>
+</tr>
+<tr>
+<td>业务系统侵入性</td>
+<td>高</td>
+<td>侵入性弱</td>
+<td>侵入性弱</td>
+</tr>
+<tr>
+<td>单机读（QPS）</td>
+<td>高</td>
+<td>9000</td>
+<td>15000</td>
+</tr>
+<tr>
+<td>单机写</td>
+<td>高</td>
+<td>1100</td>
+<td>1800</td>
+</tr>
+<tr>
+<td>集群读（QPS）3机</td>
+<td>高</td>
+<td>27000</td>
+<td>45000</td>
+</tr>
+<tr>
+<td>集群写 3机</td>
+<td>高</td>
+<td>3300</td>
+<td>5600</td>
+</tr>
+</tbody></table>
+<h2 id="apollo架构图"><a href="#apollo架构图" class="headerlink" title="apollo架构图"></a>apollo架构图</h2><p><img src="/2021/08/01/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/image-20210803175045909.png" alt="image-20210803175045909"></p>
+<p><img src="file:///Users/xingzhiwei/hexo/source/_posts/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/image-20210803174456656.png?lastModify=1627984055" alt="image-20210803174456656"></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo">apollo源码</a></p>
+<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><p>apollo.go</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/4/26</span></span><br><span class="line"><span class="comment"> * Time 下午2:53</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> apollo</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/agcache/memory&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/component/log&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/apolloconfig/agollo/v4/env/config&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> client *agollo.Client</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// apollo配置</span></span><br><span class="line">	c := &amp;config.AppConfig&#123;</span><br><span class="line">		AppID:          <span class="string">&quot;G02-go-test&quot;</span>,</span><br><span class="line">		Cluster:        <span class="string">&quot;default&quot;</span>, <span class="comment">// 一次限制一个集群数据</span></span><br><span class="line">		NamespaceName:  <span class="string">&quot;redis,application&quot;</span>,</span><br><span class="line">		IP:             <span class="string">&quot;http://d-apollo.yundasys.com:30224&quot;</span>,</span><br><span class="line">		IsBackupConfig: <span class="literal">false</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	agollo.SetCache(&amp;memory.DefaultCacheFactory&#123;&#125;)</span><br><span class="line">	agollo.SetLogger(&amp;log.DefaultLogger&#123;&#125;)</span><br><span class="line">	<span class="comment">// 创建客户端</span></span><br><span class="line">	cli, err := agollo.StartWithConfig(<span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(appConfig *config.AppConfig, err error)</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> c, <span class="literal">nil</span></span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	client = cli</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetClient</span><span class="params">()</span> *<span class="title">agollo</span>.<span class="title">Client</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> client</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>main.go</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/4/26</span></span><br><span class="line"><span class="comment"> * Time 下午2:51</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br><span class="line">	<span class="string">&quot;imooc.com/ccmouse/learngo/apollo/apollo&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	r := gin.Default()</span><br><span class="line">	client := apollo.GetClient()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	r.GET(<span class="string">&quot;/&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		cache := client.GetConfigCache(<span class="string">&quot;redis&quot;</span>)</span><br><span class="line">		val,_ := cache.Get(<span class="string">&quot;host&quot;</span>)</span><br><span class="line">		c.JSON(<span class="number">200</span>, gin.H&#123;<span class="string">&quot;message&quot;</span>: val&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
       
 
       
@@ -647,7 +780,33 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">apollo</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">配置中心</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/微服务//" class="article-tag-list-link color4">微服务</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
@@ -1161,6 +1320,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">熔断降级</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">apollo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">配置中心</a>
               </li>
             
             <div class="clearfix"></div>
