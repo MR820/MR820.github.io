@@ -551,7 +551,179 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="什么是服务注册中心"><a href="#什么是服务注册中心" class="headerlink" title="什么是服务注册中心"></a>什么是服务注册中心</h2><p>服务注册中心是服务实现服务化管理的核心组件，类似于目录服务的作用，主要用来存储服务信息，譬如提供者url 串、路由信息等。 服务注册中心是微服务架构中最基础的设施之一。 注册中心可以说是微服务架构中的“通讯录”，它记录了服务和服务地址的映射关系。</p>
+<h2 id="注册中心选型"><a href="#注册中心选型" class="headerlink" title="注册中心选型"></a>注册中心选型</h2><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>比较项</th>
+<th>Eureka</th>
+<th>zookeeper</th>
+<th>Nacos</th>
+<th>Consul</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>集群结构</td>
+<td>平级</td>
+<td>主从</td>
+<td>支持平级和主从</td>
+<td>主从</td>
+</tr>
+<tr>
+<td>2</td>
+<td>集群角色</td>
+<td>主人</td>
+<td>Leader、follower observer</td>
+<td>leader、follower、candidate</td>
+<td>server-leader、server以及client</td>
+</tr>
+<tr>
+<td>3</td>
+<td>是否可以及时知道服务状态变化</td>
+<td>不能及时知道</td>
+<td>会及时知道</td>
+<td>不能及时知道</td>
+<td>不能及时知道</td>
+</tr>
+<tr>
+<td>4</td>
+<td>一致性协议（<strong>CAP****）</strong></td>
+<td>注重可用性（AP）</td>
+<td>注重一致性(CP)</td>
+<td>支持CP\AP 默认AP</td>
+<td>注重一致性(CP)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>雪崩保护</td>
+<td>有</td>
+<td>没有</td>
+<td>有</td>
+<td>没有</td>
+</tr>
+<tr>
+<td>6</td>
+<td>社区是否活跃</td>
+<td>Eureka2.0不再维护了</td>
+<td>持续维护</td>
+<td>持续维护</td>
+<td>持续维护</td>
+</tr>
+<tr>
+<td>7</td>
+<td>管理端</td>
+<td>有现成的eureka管理端</td>
+<td>没有现成的管理端</td>
+<td>有现成的管理端</td>
+<td>有现成的管理端</td>
+</tr>
+<tr>
+<td>8</td>
+<td>负载均衡策略</td>
+<td>使用ribbon实现</td>
+<td>一般可以直接采用RPC的负载均衡</td>
+<td>权重/metadata/Selector</td>
+<td>Fabio</td>
+</tr>
+<tr>
+<td>9</td>
+<td>权限控制</td>
+<td>无</td>
+<td>使用ACL实现节点权限控制</td>
+<td>RBAC-用户、角色、权限</td>
+<td>ACL</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Spring Cloud集成</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>11</td>
+<td>健康检查</td>
+<td>Client Beat</td>
+<td>Keep Alive</td>
+<td>TCP/HTTP/MYSQL/Client Beat</td>
+<td>TCP/HTTP/gRPC/Cmd</td>
+</tr>
+<tr>
+<td>12</td>
+<td>自动注销实例</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>13</td>
+<td>访问协议</td>
+<td>HTTP</td>
+<td>TCP</td>
+<td>HTTP/DNS</td>
+<td>HTTP/DNS</td>
+</tr>
+<tr>
+<td>14</td>
+<td>是否可用作配置中心</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>15</td>
+<td>多数据中心</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>16</td>
+<td>跨注册中心同步</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Dubbo集成</td>
+<td>不支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>18</td>
+<td>K8S集成</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+</tbody></table>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img src="/2021/08/01/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/image-20210804153012447.png" alt="image-20210804153012447"></p>
+<p><img src="/2021/08/01/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/image-20210804153029816.png" alt="image-20210804153029816"></p>
+<p><img src="/2021/08/01/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/image-20210804154520979.png" alt="image-20210804154520979"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>主从集群</p>
+<p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/1719.html">Raft协议</a></p>
+<h2 id="优雅停机主动从Nacos下线实例"><a href="#优雅停机主动从Nacos下线实例" class="headerlink" title="优雅停机主动从Nacos下线实例"></a>优雅停机主动从Nacos下线实例</h2><h3 id="问题场景"><a href="#问题场景" class="headerlink" title="问题场景"></a>问题场景</h3><p>服务注册到 Nacos 上，部署采用的是 k8s + docker 容器部署。</p>
+<p>当pod发布升级时，新的 pod 被创建——Nacos 上服务实例加 1，旧的 pod 被关闭——Nacos 上服务实例减 1。</p>
+<p>Nacos 通过心跳检测机制，将旧的 pod 实例下线。</p>
+<p>在关闭旧的 pod 到下线 pod 之间，存在一定的时间差，导致服务消费方调用接口会发生报错的情况，对业务操作造成一定影响。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>在 Pod 关闭前设置一个 preStop 钩子，在 preStop 脚本中执行主动从 Nacos 下线本机实例， sleep 25 秒后再执行 Pod 的销毁，从而实现优雅停机。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 调用从nacos下线接口</span></span><br><span class="line">curl http://localhost:8080/api/nacos/deregister</span><br><span class="line"><span class="meta">#</span><span class="bash"> 延迟发送关闭信号到容器进程</span></span><br><span class="line">sleep 25</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建clientConfig</span></span><br><span class="line">clientConnfig := constant.ClientConfig&#123;</span><br><span class="line">		TimeoutMs:           <span class="number">5000</span>, <span class="comment">// 超时时间</span></span><br><span class="line">		NamespaceId:         <span class="string">&quot;95d1f5d2-cc16-4b65-86e0-9ac0357d623d&quot;</span>,</span><br><span class="line">		NotLoadCacheAtStart: <span class="literal">true</span>,</span><br><span class="line">		CacheDir:            <span class="string">&quot;/tmp/nacos/cache&quot;</span>,</span><br><span class="line">		LogDir:              <span class="string">&quot;/tmp/nacos/log&quot;</span>,</span><br><span class="line">		RotateTime:          <span class="string">&quot;1h&quot;</span>,    <span class="comment">// 日志轮转周期,比如：30m, 1h, 24h, 默认是24h</span></span><br><span class="line">		MaxAge:              <span class="number">3</span>,       <span class="comment">// 日志最大文件数，默认3</span></span><br><span class="line">		LogLevel:            <span class="string">&quot;debug&quot;</span>, <span class="comment">// 日志默认级别，值必须是：debug,info,warn,error，默认值是info</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建ServerConfig 至少一个ServerConfig</span></span><br><span class="line">	serverConfigs := []constant.ServerConfig&#123;</span><br><span class="line">		&#123;</span><br><span class="line">			IpAddr:      <span class="string">&quot;172.16.213.134&quot;</span>,</span><br><span class="line">			ContextPath: <span class="string">&quot;/nacos&quot;</span>,</span><br><span class="line">			Port:        <span class="number">8848</span>,</span><br><span class="line">			Scheme:      <span class="string">&quot;http&quot;</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建服务发现客户端</span></span><br><span class="line">	namingClient, err := clients.CreateNamingClient(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">		<span class="string">&quot;serverConfigs&quot;</span>: serverConfigs,</span><br><span class="line">		<span class="string">&quot;clientConfig&quot;</span>:  clientConnfig,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册实例</span></span><br><span class="line">success, err := namingClient.RegisterInstance(vo.RegisterInstanceParam&#123;</span><br><span class="line">		Ip:          <span class="string">&quot;172.16.231.1&quot;</span>,</span><br><span class="line">		Port:        <span class="number">8080</span>,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		Weight:      <span class="number">1</span>,</span><br><span class="line">		Enable:      <span class="literal">true</span>,</span><br><span class="line">		Healthy:     <span class="literal">true</span>,</span><br><span class="line">		Ephemeral:   <span class="literal">true</span>,</span><br><span class="line">		Metadata:    <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;<span class="string">&quot;idc&quot;</span>: <span class="string">&quot;shanghai&quot;</span>&#125;,</span><br><span class="line">		ClusterName: <span class="string">&quot;cluster-a&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注销实例</span></span><br><span class="line">success, err := namingClient.DeregisterInstance(vo.DeregisterInstanceParam&#123;</span><br><span class="line">		Ip:          <span class="string">&quot;172.16.231.1&quot;</span>,</span><br><span class="line">		Port:        <span class="number">8080</span>,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		Ephemeral:   <span class="literal">true</span>,</span><br><span class="line">		Cluster:     <span class="string">&quot;cluster-a&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取服务信息</span></span><br><span class="line">services, err := namingClient.GetService(vo.GetServiceParam&#123;</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取所有的实例列表</span></span><br><span class="line">instances, err := namingClient.SelectAllInstances(vo.SelectAllInstancesParam&#123;</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group_a&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取实例列表</span></span><br><span class="line">instances, err := namingClient.SelectInstances(vo.SelectInstancesParam&#123;</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">		HealthyOnly: <span class="literal">true</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取一个健康的实例（加权随机轮询）</span></span><br><span class="line">instance, err := namingClient.SelectOneHealthyInstance(vo.SelectOneHealthInstanceParam&#123;</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听服务变化</span></span><br><span class="line">err := namingClient.Subscribe(&amp;vo.SubscribeParam&#123;</span><br><span class="line">		ServiceName: <span class="string">&quot;service-user&quot;</span>,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		SubscribeCallback: <span class="function"><span class="keyword">func</span><span class="params">(services []model.SubscribeService, err error)</span></span> &#123;</span><br><span class="line">			log.Printf(<span class="string">&quot;\n\n callback return services:%s \n\n&quot;</span>, util.ToJsonString(services))</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取消服务监听</span></span><br><span class="line">err := namingClient.Unsubscribe(&amp;vo.SubscribeParam&#123;</span><br><span class="line">		ServiceName: <span class="string">&quot;user-service&quot;</span>,</span><br><span class="line">		Clusters:    []<span class="keyword">string</span>&#123;<span class="string">&quot;cluster-a&quot;</span>&#125;,</span><br><span class="line">		GroupName:   <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">		SubscribeCallback: <span class="function"><span class="keyword">func</span><span class="params">(services []model.SubscribeService, err error)</span></span> &#123;</span><br><span class="line">			log.Printf(<span class="string">&quot;\n\n callback return services:%s \n\n&quot;</span>, util.ToJsonString(services))</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取服务名列表</span></span><br><span class="line">serviceInfos, err := namingClient.GetAllServicesInfo(vo.GetAllServiceInfoParam&#123;</span><br><span class="line">		NameSpace: <span class="string">&quot;95d1f5d2-cc16-4b65-86e0-9ac0357d623d&quot;</span>,</span><br><span class="line">		GroupName: <span class="string">&quot;group-a&quot;</span>,</span><br><span class="line">		PageNo:    <span class="number">1</span>,</span><br><span class="line">		PageSize:  <span class="number">10</span>,</span><br><span class="line">	&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/08/01/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/image-20210805164916009.png" alt="image-20210805164916009"></p>
+
       
 
       
@@ -559,7 +731,29 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">注册中心</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/微服务//" class="article-tag-list-link color4">微服务</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
@@ -1173,6 +1367,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">配置中心</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">注册中心</a>
               </li>
             
             <div class="clearfix"></div>
