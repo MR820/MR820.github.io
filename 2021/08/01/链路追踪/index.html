@@ -8,15 +8,22 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>链路追踪 | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="article">
+  <meta name="description" content="什么是分布式追踪分布式系统多台计算机通过网络组成了一个庞大的系统，这个系统即是分布式系统。 在微服务或者云原生开发中，一般认为分布式系统是通过各种中间件&#x2F;服务网格连接的，这些中间件提供了共享资源、功能(API等)、文件等，使得整个网络可以当作一台计算机进行工作。 分布式追踪在分布式系统中，用户的一个请求会被分发到多个子系统中，被不同的服务处理，最后将结果返回给用户。用户发出请求和获得结果这段时间是">
+<meta property="og:type" content="article">
 <meta property="og:title" content="链路追踪">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
+<meta property="og:description" content="什么是分布式追踪分布式系统多台计算机通过网络组成了一个庞大的系统，这个系统即是分布式系统。 在微服务或者云原生开发中，一般认为分布式系统是通过各种中间件&#x2F;服务网格连接的，这些中间件提供了共享资源、功能(API等)、文件等，使得整个网络可以当作一台计算机进行工作。 分布式追踪在分布式系统中，用户的一个请求会被分发到多个子系统中，被不同的服务处理，最后将结果返回给用户。用户发出请求和获得结果这段时间是">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810111707075.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810112214728.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810110828587.png">
 <meta property="article:published_time" content="2021-08-01T12:08:49.000Z">
-<meta property="article:modified_time" content="2021-08-01T12:08:49.526Z">
+<meta property="article:modified_time" content="2021-08-10T03:33:22.490Z">
 <meta property="article:author" content="devin">
+<meta property="article:tag" content="链路追踪">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810111707075.png">
   
     <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
@@ -189,7 +196,50 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="什么是分布式追踪"><a href="#什么是分布式追踪" class="headerlink" title="什么是分布式追踪"></a>什么是分布式追踪</h2><h3 id="分布式系统"><a href="#分布式系统" class="headerlink" title="分布式系统"></a>分布式系统</h3><p>多台计算机通过网络组成了一个庞大的系统，这个系统即是分布式系统。</p>
+<p>在微服务或者云原生开发中，一般认为分布式系统是通过各种中间件/服务网格连接的，这些中间件提供了共享资源、功能(API等)、文件等，使得整个网络可以当作一台计算机进行工作。</p>
+<h3 id="分布式追踪"><a href="#分布式追踪" class="headerlink" title="分布式追踪"></a>分布式追踪</h3><p>在分布式系统中，用户的一个请求会被分发到多个子系统中，被不同的服务处理，最后将结果返回给用户。用户发出请求和获得结果这段时间是一个请求周期。</p>
+<p>当我们购物时，只需要一个很简单的过程：</p>
+<blockquote>
+<p>下单 -&gt; 付款 -&gt; 等待收货</p>
+</blockquote>
+<p><img src="/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810111707075.png" alt="image-20210810111707075"></p>
+<p>图中出现了很多箭头，这些箭头指向了下一步要流经的服务/子系统，这些箭头组成了链路网络。</p>
+<p>在一个复杂的分布式系统中，任何子系统出现性能不佳的情况，都会影响整个请求周期。根据上图，我们设想：</p>
+<ol>
+<li><p>系统中有可能每天都在增加新服务或删除旧服务，也可能进行升级，当系统出现错误，我们如何定位问题？</p>
+</li>
+<li><p>当用户请求时，响应缓慢，怎么定位问题？</p>
+</li>
+<li><p>服务可能由不同的编程语言开发，1、2 定位问题的方式，是否适合所有编程语言？</p>
+</li>
+</ol>
+<h2 id="分布式追踪有什么用呢"><a href="#分布式追踪有什么用呢" class="headerlink" title="分布式追踪有什么用呢"></a>分布式追踪有什么用呢</h2><p>随着微服务和云原生开发的兴起，越来越多应用基于分布式进行开发，但是大型应用拆分为微服务后，服务之间的依赖和调用变得越来越复杂，这些服务是不同团队、使用不同语言开发的，部署在不同机器上，他们之间提供的接口可能不同(gRPC、Restful api等)。</p>
+<p>为了维护这些服务，软件领域出现了 <strong>Observability</strong> 思想，在这个思想中，对微服务的维护分为三个部分：</p>
+<ul>
+<li>度量(<code>Metrics</code>)：用于监控和报警； (pprof,promethues+grafana)</li>
+<li>分布式追踪(Tracing)：用于记录系统中所有的跟踪信息；(Dapper,zipkin,skywalking)</li>
+<li>日志(Logging)：记录每个服务中离散的信息；(ELK elastic+logstash+kibana+kafka+filebeat)</li>
+</ul>
+<p>这三部分并不是独立开来的，例如 Metrics 可以监控 Tracing 、Logging 服务是否正常运行。Tacing 和 Metrics 服务在运行过程中会产生日志。</p>
+<p><img src="/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810112214728.png" alt="image-20210810112214728"></p>
+<p>近年来，出现了 APM 系统，APM 称为 应用程序性能管理系统，可以进行 软件性能监视和性能分析。APM 是一种 Metrics，但是现在有融合 Tracing 的趋势。</p>
+<p>回归正题，分布式追踪系统(Tracing)有什么用呢？这里可以以 zipkin 举例，它可以：</p>
+<ul>
+<li>分布式跟踪信息传递</li>
+<li>分布式事务监控</li>
+<li>服务依赖性分析</li>
+<li>展示跨进程调用链</li>
+<li>定位问题</li>
+<li>性能优化</li>
+</ul>
+<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><p>gin+zipkin</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2020/8/27</span></span><br><span class="line"><span class="comment"> * Time 4:48 下午</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;flag&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line"></span><br><span class="line">	_ <span class="string">&quot;net/http/pprof&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/prometheus/client_golang/prometheus&quot;</span></span><br><span class="line">	metric <span class="string">&quot;imooc.com/ccmouse/learngo/api/prometheus&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/prometheus/client_golang/prometheus/promhttp&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br><span class="line">	<span class="string">&quot;imooc.com/ccmouse/learngo/api/user&quot;</span></span><br><span class="line"></span><br><span class="line">	_ <span class="string">&quot;github.com/mkevac/debugcharts&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;github.com/opentracing/opentracing-go&quot;</span></span><br><span class="line">	zkOt <span class="string">&quot;github.com/openzipkin-contrib/zipkin-go-opentracing&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/openzipkin/zipkin-go&quot;</span></span><br><span class="line">	zkHttp <span class="string">&quot;github.com/openzipkin/zipkin-go/reporter/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第一步: 开一个全局变量</span></span><br><span class="line"><span class="keyword">var</span> zkTracer opentracing.Tracer</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	listenAddr       = flag.String(<span class="string">&quot;web.listen-port&quot;</span>, <span class="string">&quot;9000&quot;</span>, <span class="string">&quot;An port to listen on for web interface and telemetry.&quot;</span>)</span><br><span class="line">	metricsPath      = flag.String(<span class="string">&quot;web.telemetry-path&quot;</span>, <span class="string">&quot;/metrics&quot;</span>, <span class="string">&quot;A path under which to expose metrics.&quot;</span>)</span><br><span class="line">	metricsNamespace = flag.String(<span class="string">&quot;metric.namespace&quot;</span>, <span class="string">&quot;ECSDATA&quot;</span>, <span class="string">&quot;Prometheus metrics namespace, as the prefix of metrics name&quot;</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 第二步: 初始化 tracer</span></span><br><span class="line">	&#123;</span><br><span class="line">		reporter := zkHttp.NewReporter(<span class="string">&quot;http://localhost:9411/api/v2/spans&quot;</span>)</span><br><span class="line">		<span class="keyword">defer</span> reporter.Close()</span><br><span class="line">		endpoint, err := zipkin.NewEndpoint(<span class="string">&quot;main3&quot;</span>, <span class="string">&quot;localhost:8888&quot;</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			log.Fatalf(<span class="string">&quot;unable to create local endpoint: %+v\n&quot;</span>, err)</span><br><span class="line">		&#125;</span><br><span class="line">		nativeTracer, err := zipkin.NewTracer(reporter, zipkin.WithLocalEndpoint(endpoint))</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			log.Fatalf(<span class="string">&quot;unable to create tracer: %+v\n&quot;</span>, err)</span><br><span class="line">		&#125;</span><br><span class="line">		zkTracer = zkOt.Wrap(nativeTracer)</span><br><span class="line">		opentracing.SetGlobalTracer(zkTracer)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		flag.Parse()</span><br><span class="line">		metrics := metric.NewMetrics(*metricsNamespace)</span><br><span class="line">		registry := prometheus.NewRegistry()</span><br><span class="line">		registry.MustRegister(metrics)</span><br><span class="line">		http.Handle(*metricsPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts&#123;&#125;))</span><br><span class="line">		log.Println(http.ListenAndServe(<span class="string">&quot;:9100&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">	&#125;()</span><br><span class="line">	Router()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Router</span><span class="params">()</span></span> &#123;</span><br><span class="line">	router := gin.Default()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 第三步: 添加一个 middleWare, 为每一个请求添加span</span></span><br><span class="line">	router.Use(<span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		span := zkTracer.StartSpan(c.FullPath())</span><br><span class="line">		<span class="keyword">defer</span> span.Finish()</span><br><span class="line">		c.Next()</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	router.GET(<span class="string">&quot;/&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		c.JSON(http.StatusOK, gin.H&#123;<span class="string">&quot;ping&quot;</span>: <span class="string">&quot;pong&quot;</span>&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	router.GET(<span class="string">&quot;/user&quot;</span>, user.InitPage)</span><br><span class="line">	router.GET(<span class="string">&quot;/user/list&quot;</span>, user.ListUser)</span><br><span class="line">	router.POST(<span class="string">&quot;/user/create&quot;</span>, user.CreateUser)</span><br><span class="line">	router.GET(<span class="string">&quot;/user/detail/:id&quot;</span>, user.DetailUser)</span><br><span class="line">	router.PATCH(<span class="string">&quot;/user/:id&quot;</span>, user.UpdateUser)</span><br><span class="line">	router.DELETE(<span class="string">&quot;/user/:id&quot;</span>, user.DeleteUser)</span><br><span class="line"></span><br><span class="line">	router.Run(<span class="string">&quot;:8888&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/08/01/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/image-20210810110828587.png" alt="image-20210810110828587"></p>
+
       
 
       
@@ -197,7 +247,29 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">链路追踪</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/微服务//" class="article-tag-list-link color4">微服务</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -299,7 +371,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA"><span class="toc-number">1.</span> <span class="toc-text">什么是分布式追踪</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.1.</span> <span class="toc-text">分布式系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA"><span class="toc-number">1.2.</span> <span class="toc-text">分布式追踪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%BD%E8%B8%AA%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%E5%91%A2"><span class="toc-number">2.</span> <span class="toc-text">分布式追踪有什么用呢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">3.</span> <span class="toc-text">代码示例</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -551,6 +623,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">链路追踪</a>
               </li>
             
             <div class="clearfix"></div>

@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161954142.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/dashboard-by-type.png">
 <meta property="article:published_time" content="2021-07-04T06:40:42.000Z">
-<meta property="article:modified_time" content="2021-07-12T03:34:36.886Z">
+<meta property="article:modified_time" content="2021-08-10T06:20:28.903Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
@@ -374,7 +374,10 @@ var _hmt = _hmt || [];
 </tr>
 </tbody></table>
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png" alt="image-20210701111108034"></p>
-<h1 id="debugcharts"><a href="#debugcharts" class="headerlink" title="debugcharts"></a>debugcharts</h1><p>一个可以实时查看golang程序内存、CPU、GC、协程等变化情况的可视化工具</p>
+<h1 id="debugcharts"><a href="#debugcharts" class="headerlink" title="debugcharts"></a>debugcharts</h1><blockquote>
+<p>debugcharts 监控占用内存大，生产环境不建议开启。</p>
+</blockquote>
+<p>一个可以实时查看golang程序内存、CPU、GC、协程等变化情况的可视化工具</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_ <span class="string">&quot;github.com/mkevac/debugcharts&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		log.Println(http.ListenAndServe(<span class="string">&quot;localhost:8081&quot;</span>, <span class="literal">nil</span>))</span><br><span class="line">	&#125;()</span><br></pre></td></tr></table></figure>
 
 <p>访问地址 localhost:8081/debug/charts</p>
@@ -770,6 +773,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">链路追踪</a>
               </li>
             
             <div class="clearfix"></div>
