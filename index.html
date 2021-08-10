@@ -169,6 +169,104 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-网络编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/08/08/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">网络编程</a>
+    </h1>
+  
+
+        
+        <a href="/2021/08/08/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" class="archive-article-date">
+  	<time datetime="2021-08-08T05:38:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a target="_blank" rel="noopener" href="https://wyxxt.org.cn/archives/1684.html">网络通信——tcp/ip协议</a></p>
+<h2 id="socket编程"><a href="#socket编程" class="headerlink" title="socket编程"></a>socket编程</h2><p><code>Socket</code>是应用层与TCP/IP协议族通信的中间软件抽象层。在设计模式中，<code>Socket</code>其实就是一个门面模式，它把复杂的TCP/IP协议族隐藏在<code>Socket</code>后面，对用户来说只需要调用Socket规定的相关函数，让<code>Socket</code>去组织符合指定的协议数据然后进行通信。</p>
+<h3 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h3><p><img src="/2021/08/08/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/image-20210809164920717.png" alt="image-20210809164920717"></p>
+<h3 id="tcp协议"><a href="#tcp协议" class="headerlink" title="tcp协议"></a>tcp协议</h3><p>TCP/IP(Transmission Control Protocol/Internet Protocol) 即传输控制协议/网间协议，是一种面向连接（连接导向）的、可靠的、基于字节流的传输层（Transport layer）通信协议，因为是面向连接的协议，数据像水流一样传输，会存在黏包问题。</p>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/8</span></span><br><span class="line"><span class="comment"> * Time 上午10:27</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">   <span class="string">&quot;bufio&quot;</span></span><br><span class="line">   <span class="string">&quot;fmt&quot;</span></span><br><span class="line">   <span class="string">&quot;io&quot;</span></span><br><span class="line">   <span class="string">&quot;log&quot;</span></span><br><span class="line">   <span class="string">&quot;net&quot;</span></span><br><span class="line"></span><br><span class="line">   <span class="string">&quot;imooc.com/ccmouse/learngo/net/protocol&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   listen, err := net.Listen(<span class="string">&quot;tcp&quot;</span>, <span class="string">&quot;127.0.0.1:8080&quot;</span>) <span class="comment">// 监听端口</span></span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Fatal(<span class="string">&quot;listen failed, err:&quot;</span>, err)</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">for</span> &#123;</span><br><span class="line">      conn, err := listen.Accept() <span class="comment">// 建立连接</span></span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;accept failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">go</span> process(conn) <span class="comment">// 启动一个 goroutine 处理连接</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">process</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">   <span class="keyword">defer</span> conn.Close()</span><br><span class="line">   <span class="keyword">for</span> &#123;</span><br><span class="line">      reader := bufio.NewReader(conn)</span><br><span class="line"></span><br><span class="line">      msg, err := protocol.Decode(reader)</span><br><span class="line">      <span class="keyword">if</span> err == io.EOF &#123;</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;decode msg failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      fmt.Println(<span class="string">&quot;收到client发来的数据：&quot;</span>, msg)</span><br><span class="line">      data, err := protocol.Encode(msg)</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;encode msg failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      conn.Write(data)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/8</span></span><br><span class="line"><span class="comment"> * Time 上午10:35</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">   <span class="string">&quot;bufio&quot;</span></span><br><span class="line">   <span class="string">&quot;fmt&quot;</span></span><br><span class="line">   <span class="string">&quot;io&quot;</span></span><br><span class="line">   <span class="string">&quot;log&quot;</span></span><br><span class="line">   <span class="string">&quot;net&quot;</span></span><br><span class="line">   <span class="string">&quot;os&quot;</span></span><br><span class="line">   <span class="string">&quot;strings&quot;</span></span><br><span class="line"></span><br><span class="line">   <span class="string">&quot;imooc.com/ccmouse/learngo/net/protocol&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   conn, err := net.Dial(<span class="string">&quot;tcp&quot;</span>, <span class="string">&quot;127.0.0.1:8080&quot;</span>)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Fatal(<span class="string">&quot;err:&quot;</span>, err)</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">defer</span> conn.Close()</span><br><span class="line">   inputReader := bufio.NewReader(os.Stdin)</span><br><span class="line">   <span class="keyword">for</span> &#123;</span><br><span class="line">      input, _ := inputReader.ReadString(<span class="string">&#x27;\n&#x27;</span>) <span class="comment">// 读取用户输入</span></span><br><span class="line">      inputInfo := strings.Trim(input, <span class="string">&quot;\r\n&quot;</span>)</span><br><span class="line">      <span class="keyword">if</span> strings.ToUpper(inputInfo) == <span class="string">&quot;Q&quot;</span> &#123; <span class="comment">// 如果输入q就推出</span></span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      data, err := protocol.Encode(inputInfo)</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         <span class="built_in">panic</span>(err)</span><br><span class="line">      &#125;</span><br><span class="line">      _, err = conn.Write(data) <span class="comment">// 发送数据</span></span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      reader := bufio.NewReader(conn)</span><br><span class="line">      msg, err := protocol.Decode(reader)</span><br><span class="line">      <span class="keyword">if</span> err == io.EOF &#123;</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;decode msg failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      fmt.Println(msg)</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="粘包拆包"><a href="#粘包拆包" class="headerlink" title="粘包拆包"></a>粘包拆包</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/8</span></span><br><span class="line"><span class="comment"> * Time 上午10:48</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> protocol</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">   <span class="string">&quot;bufio&quot;</span></span><br><span class="line">   <span class="string">&quot;bytes&quot;</span></span><br><span class="line">   <span class="string">&quot;encoding/binary&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将消息编码</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(message <span class="keyword">string</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">   <span class="comment">// 读取消息的长度，转换成int32类型（占4个字节）</span></span><br><span class="line">   <span class="keyword">var</span> length = <span class="keyword">int32</span>(<span class="built_in">len</span>(message))</span><br><span class="line">   <span class="keyword">var</span> pkg = <span class="built_in">new</span>(bytes.Buffer)</span><br><span class="line">   <span class="comment">// 写入消息头</span></span><br><span class="line">   err := binary.Write(pkg, binary.LittleEndian, length) <span class="comment">// binary.LittleEndian 小端序，低地址位存放低位字节</span></span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 写入消息实体</span></span><br><span class="line">   err = binary.Write(pkg, binary.LittleEndian, []<span class="keyword">byte</span>(message))</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> pkg.Bytes(), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 解码消息</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Decode</span><span class="params">(reader *bufio.Reader)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">   <span class="comment">// 读取消息的长度</span></span><br><span class="line">   lengthByte, _ := reader.Peek(<span class="number">4</span>) <span class="comment">// 读取前 4 个字节的数据</span></span><br><span class="line">   lengthBuff := bytes.NewBuffer(lengthByte)</span><br><span class="line">   <span class="keyword">var</span> length <span class="keyword">int32</span></span><br><span class="line">   err := binary.Read(lengthBuff, binary.LittleEndian, &amp;length)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// Buffered返回缓冲中现有的可读取的字节数</span></span><br><span class="line">   <span class="keyword">if</span> <span class="keyword">int32</span>(reader.Buffered()) &lt; length+<span class="number">4</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 读取真正的消息</span></span><br><span class="line">   pack := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="keyword">int</span>(<span class="number">4</span>+length))</span><br><span class="line">   _, err = reader.Read(pack)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">string</span>(pack[<span class="number">4</span>:]), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="udp协议"><a href="#udp协议" class="headerlink" title="udp协议"></a>udp协议</h3><p>用户数据报协议（User Datagram Protocol，缩写为UDP），又称用户数据报文协议，是一个简单的面向数据报(package-oriented)的传输层协议。UDP只提供数据的不可靠传递，它一旦把应用程序发给网络层的数据发送出去，就不保留数据备份（所以UDP有时候也被认为是不可靠的数据报协议）。UDP在IP数据报的头部仅仅加入了复用和数据校验。</p>
+<h4 id="服务端-1"><a href="#服务端-1" class="headerlink" title="服务端"></a>服务端</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/8</span></span><br><span class="line"><span class="comment"> * Time 上午11:36</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">   <span class="string">&quot;log&quot;</span></span><br><span class="line">   <span class="string">&quot;net&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   listen, err := net.ListenUDP(<span class="string">&quot;udp&quot;</span>, &amp;net.UDPAddr&#123;</span><br><span class="line">      IP:   net.IPv4(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">      Port: <span class="number">30000</span>,</span><br><span class="line">   &#125;)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Println(<span class="string">&quot;listen failed, err:&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">defer</span> listen.Close()</span><br><span class="line">   <span class="keyword">for</span> &#123;</span><br><span class="line">      <span class="keyword">var</span> data [<span class="number">1024</span>]<span class="keyword">byte</span></span><br><span class="line">      n, addr, err := listen.ReadFromUDP(data[:]) <span class="comment">// 接收数据</span></span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;read udp failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      log.Printf(<span class="string">&quot;data:%v addr:%v count:%v\n&quot;</span>, <span class="keyword">string</span>(data[:n]), addr, n)</span><br><span class="line">      _, err = listen.WriteToUDP(data[:n], addr) <span class="comment">// 发送数据</span></span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">         log.Println(<span class="string">&quot;write to udp failed, err:&quot;</span>, err)</span><br><span class="line">         <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="客户端-1"><a href="#客户端-1" class="headerlink" title="客户端"></a>客户端</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Createby GoLand</span></span><br><span class="line"><span class="comment"> * User xzw jsjxzw@163.com</span></span><br><span class="line"><span class="comment"> * Date 2021/8/8</span></span><br><span class="line"><span class="comment"> * Time 上午11:43</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">   <span class="string">&quot;fmt&quot;</span></span><br><span class="line">   <span class="string">&quot;log&quot;</span></span><br><span class="line">   <span class="string">&quot;net&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   socket, err := net.DialUDP(<span class="string">&quot;udp&quot;</span>, <span class="literal">nil</span>, &amp;net.UDPAddr&#123;</span><br><span class="line">      IP:   net.IPv4(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">      Port: <span class="number">30000</span>,</span><br><span class="line">   &#125;)</span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Println(<span class="string">&quot;连接服务器失败，err：&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">defer</span> socket.Close()</span><br><span class="line">   sendData := []<span class="keyword">byte</span>(<span class="string">&quot;Hello server&quot;</span>)</span><br><span class="line">   _, err = socket.Write(sendData) <span class="comment">// 发送数据</span></span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Println(<span class="string">&quot;发送数据失败,err:&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   data := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">4096</span>)</span><br><span class="line">   n, remoteAddr, err := socket.ReadFromUDP(data) <span class="comment">// 接收数据</span></span><br><span class="line">   <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">      log.Println(<span class="string">&quot;接收数据失败，err：&quot;</span>, err)</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">   &#125;</span><br><span class="line">   fmt.Printf(<span class="string">&quot;recv:%v addr:%v count:%v\n&quot;</span>, <span class="keyword">string</span>(data[:n]), remoteAddr, n)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">网络编程</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/go//" class="article-tag-list-link color3">go</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/08/08/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-本地缓存" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -378,68 +476,6 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/08/01/%E7%86%94%E6%96%AD%E9%99%8D%E7%BA%A7/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-elk日志中心" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/08/01/elk%E6%97%A5%E5%BF%97%E4%B8%AD%E5%BF%83/">elk日志中心</a>
-    </h1>
-  
-
-        
-        <a href="/2021/08/01/elk%E6%97%A5%E5%BF%97%E4%B8%AD%E5%BF%83/" class="archive-article-date">
-  	<time datetime="2021-08-01T12:08:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/08/01/elk%E6%97%A5%E5%BF%97%E4%B8%AD%E5%BF%83/">展开全文 >></a>
         </p>
       
 
@@ -899,11 +935,149 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="什么是API网关"><a href="#什么是API网关" class="headerlink" title="什么是API网关"></a>什么是API网关</h2><p>API网关是系统与外界连通的入口，设计模式中的facade模式（外观模式，门面模式）。</p>
-<p>我们可以在网关进行处理一些非业务逻辑的处理，比如权限验证，监控，缓存，请求路由等等。</p>
-        
-          <a class="article-more-a" href="/2021/08/01/%E7%BD%91%E5%85%B3/#more">more >></a>
-        
+        <h2 id="流量网关"><a href="#流量网关" class="headerlink" title="流量网关"></a>流量网关</h2><h2 id="流量网关和业务网关"><a href="#流量网关和业务网关" class="headerlink" title="流量网关和业务网关"></a>流量网关和业务网关</h2><h3 id="流量网关-1"><a href="#流量网关-1" class="headerlink" title="流量网关"></a>流量网关</h3><ul>
+<li>全局性流控</li>
+<li>日志统计</li>
+<li>防止 SQL 注入</li>
+<li>防止 Web 攻击</li>
+<li>屏蔽工具扫描</li>
+<li>黑白名单控制</li>
+</ul>
+<h3 id="业务网关"><a href="#业务网关" class="headerlink" title="业务网关"></a><strong>业务网关</strong></h3><ul>
+<li>请求接入：作为所有 API 接口服务请求的接入点，管理所有的接入请求；</li>
+<li>业务聚合：作为所有后端业务服务的聚合点，所有的业务服务都可以在这里被调用；</li>
+<li>中介策略：实现安全、验证、路由、过滤、流控，缓存等策略，进行一些必要的中介处理；</li>
+<li>统一管理：提供配置管理工具，对所有 API 服务的调用生命周期和相应的中介策略进行统一管理。</li>
+</ul>
+<h2 id="开源网关"><a href="#开源网关" class="headerlink" title="开源网关"></a>开源网关</h2><p>目前常见的开源网关大致上按照语言分类有如下几类：</p>
+<ul>
+<li>Nginx+lua：Open Resty、Kong、Orange、Abtesting gateway 等</li>
+<li>Java：Zuul/Zuul2、Spring Cloud Gateway、Kaazing KWG、gravitee、Dromara soul 等</li>
+<li>Go：Janus、fagongzi、Grpc-gateway</li>
+<li>Dotnet：Ocelot</li>
+<li>NodeJS：Express Gateway、Micro Gateway</li>
+</ul>
+<p>按照使用数量、成熟度等来划分，主流的有 4 个：</p>
+<ul>
+<li>OpenResty</li>
+<li>Kong</li>
+<li>Zuul/Zuul2</li>
+<li>Spring Cloud Gateway</li>
+</ul>
+<h3 id="ABTesingGateway"><a href="#ABTesingGateway" class="headerlink" title="ABTesingGateway"></a>ABTesingGateway</h3><p>项目地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/CNSRE/ABTestingGateway">https://github.com/CNSRE/ABTestingGateway</a></p>
+<h3 id="Zuul-Zuul2"><a href="#Zuul-Zuul2" class="headerlink" title="Zuul/Zuul2"></a><strong>Zuul/Zuul2</strong></h3><p><a target="_blank" rel="noopener" href="https://github.com/Netflix/zuul">https://github.com/Netflix/zuul</a></p>
+<h3 id="Spring-Cloud-Gateway"><a href="#Spring-Cloud-Gateway" class="headerlink" title="Spring Cloud Gateway"></a>Spring Cloud Gateway</h3><p><a target="_blank" rel="noopener" href="https://github.com/spring-cloud/spring-cloud-gateway/">https://github.com/spring-cloud/spring-cloud-gateway/</a></p>
+<h2 id="OpenResty-Kong-Zuul2-SpringCloudGateway-重要特性对比"><a href="#OpenResty-Kong-Zuul2-SpringCloudGateway-重要特性对比" class="headerlink" title="OpenResty/Kong/Zuul2/SpringCloudGateway 重要特性对比"></a><strong>OpenResty/Kong/Zuul2/SpringCloudGateway 重要特性对比</strong></h2><table>
+<thead>
+<tr>
+<th>网关</th>
+<th>限流</th>
+<th>鉴权</th>
+<th>监控</th>
+<th>易用性</th>
+<th>可维护性</th>
+<th>成熟度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spring Cloud Gateway</td>
+<td>可以通过IP，用户，集群限流，提供了相应的接口进行扩展</td>
+<td>普通鉴权、auth2.0</td>
+<td>Gateway Metrics Filter</td>
+<td>简单易用</td>
+<td>spring系列可扩展强，易配置 可维护性好</td>
+<td>spring社区成熟，但gateway资源较少</td>
+</tr>
+<tr>
+<td>Zuul2</td>
+<td>可以通过配置文件配置集群限流和单服务器限流亦可通过filter实现限流扩展</td>
+<td>filter中实现</td>
+<td>filter中实现</td>
+<td>参考资料较少</td>
+<td>可维护性较差</td>
+<td>开源不久，资料少</td>
+</tr>
+<tr>
+<td>OpenResty</td>
+<td>需要lua开发</td>
+<td>需要lua开发</td>
+<td>需要开发</td>
+<td>简单易用，但是需要进行的lua开发很多</td>
+<td>可维护性较差，将来需要维护大量lua脚本</td>
+<td>很成熟资料很多</td>
+</tr>
+<tr>
+<td>Kong</td>
+<td>根据秒，分，时，天，月，年，根据用户进行限流。可在原码的基础上进行开发</td>
+<td>普通鉴权，Key Auth鉴权，HMAC，auth2.0</td>
+<td>可上报datadog，记录请求数量，请求数据量，应答数据量，接收于发送的时间间隔，状态码数量，kong内运行时间</td>
+<td>简单易用，api转发通过管理员接口配置，开发需要lua脚本</td>
+<td>可维护性较差，将来需要维护大量lua库</td>
+<td>相对成熟，用户问题汇总，社区，插件开源</td>
+</tr>
+</tbody></table>
+<h2 id="Kong"><a href="#Kong" class="headerlink" title="Kong"></a>Kong</h2><p><a target="_blank" rel="noopener" href="https://konghq.com/">https://konghq.com/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kong/kong">https://github.com/kong/kong</a></p>
+<p><strong>主要有三个组件</strong></p>
+<ul>
+<li>Kong Server ：基于nginx的服务器，用来接收API请求。</li>
+<li>Apache Cassandra/PostgreSQL ：用来存储操作数据。</li>
+<li>Kong dashboard：官方推荐UI管理工具，当然，也可以使用 restfull 方式 管理admin api。</li>
+</ul>
+<p>Kong采用插件机制进行功能定制，插件集（可以是0或N个）在API请求响应循环的生命周期中被执行。插件使用Lua编写，目前已有几个基础功能：HTTP基本认证、密钥认证、CORS（Cross-Origin Resource Sharing，跨域资源共享）、TCP、UDP、文件日志、API请求限流、请求转发以及Nginx监控。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>安装环境：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">获取下载的rpm</span></span><br><span class="line">yum install https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm</span><br><span class="line"><span class="meta">#</span><span class="bash">执行安装</span></span><br><span class="line">yum install postgresql95-server</span><br></pre></td></tr></table></figure>
+
+<p>初始化数据库</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service postgresql-9.5 initdb</span><br></pre></td></tr></table></figure>
+
+<p>启动服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service postgresql-9.5 start</span><br></pre></td></tr></table></figure>
+
+<h3 id="远程连接"><a href="#远程连接" class="headerlink" title="远程连接"></a>远程连接</h3><p>修改</p>
+<p>vi /var/lib/pgsql/9.5/data/pg_hba.conf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> TYPE  DATABASE        USER            ADDRESS                 METHOD</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="string">&quot;local&quot;</span> is <span class="keyword">for</span> Unix domain socket connections only</span></span><br><span class="line">local   all             all                                     peer</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> IPv4 <span class="built_in">local</span> connections:</span></span><br><span class="line">host    all             all             127.0.0.1/32            trust</span><br><span class="line"><span class="meta">#</span><span class="bash"> IPv6 <span class="built_in">local</span> connections:</span></span><br><span class="line">host    all             all             ::1/128                 ident</span><br><span class="line">host    all             all             0.0.0.0/0               trust</span><br><span class="line"><span class="meta">#</span><span class="bash"> Allow replication connections from localhost, by a user with the</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> replication privilege.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="built_in">local</span>   replication     postgres                                peer</span></span><br><span class="line"><span class="meta">#</span><span class="bash">host    replication     postgres        127.0.0.1/32            ident</span></span><br><span class="line"><span class="meta">#</span><span class="bash">host    replication     postgres        ::1/128                 ident</span></span><br></pre></td></tr></table></figure>
+
+<p>vi /var/lib/pgsql/9.5/data/postgresql.conf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">listen_addresses = &#x27;*&#x27;          # what IP address(es) to listen on;</span><br><span class="line">                                        # comma-separated list of addresses;</span><br><span class="line">                                        # defaults to &#x27;localhost&#x27;; use &#x27;*&#x27; for all</span><br><span class="line">                                        # (change requires restart)</span><br><span class="line">port = 5432                             # (change requires restart)</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a><strong>创建数据库</strong></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">su - postgres//进入数据库</span><br><span class="line">-bash-4.2$ psql</span><br><span class="line">CREATE USER kong WITH PASSWORD &#x27;kong&#x27;;</span><br><span class="line">create database kong owner kong;</span><br><span class="line">grant all on database kong to kong;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3下载地址"><a href="#1-3下载地址" class="headerlink" title="1.3下载地址"></a>1.3下载地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://kong.bintray.com/kong-community-edition-rpm/centos/6/</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh kong-community-edition-0.13.1.el6.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="拷贝配置文件"><a href="#拷贝配置文件" class="headerlink" title="拷贝配置文件"></a>拷贝配置文件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/etc/kong/kong.conf.default</span><br><span class="line">/etc/kong/kong.conf</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化数据库"><a href="#初始化数据库" class="headerlink" title="初始化数据库"></a>初始化数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.4 kong migrations bootstrap</span><br><span class="line">1.3 kong migrations up</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kong start</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装dashboard"><a href="#安装dashboard" class="headerlink" title="安装dashboard"></a>安装dashboard</h3><p><a target="_blank" rel="noopener" href="https://github.com/PGBI/kong-dashboard">https://github.com/PGBI/kong-dashboard</a></p>
+<p>最新的Kong是0.14.x，而Kong-Dashboard暂时支持最高版本0.13.x</p>
+<p>安装npm</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl --silent --location https://rpm.nodesource.com/setup_7.x | bash -</span><br><span class="line">sudo yum install -y nodejs</span><br></pre></td></tr></table></figure>
+
+<p>安装dashboard</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g kong-dashboard</span><br></pre></td></tr></table></figure>
+
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kong-dashboard start --kong-url http://localhost:8001</span><br></pre></td></tr></table></figure>
+
+<p>RPM常用命令</p>
+<p><strong>1、安装</strong></p>
+<p>rpm -i 需要安装的包文件名</p>
+<p>举例如下：</p>
+<p>rpm -i example.rpm 安装 example.rpm 包；</p>
+<p>rpm -iv example.rpm 安装 example.rpm 包并在安装过程中显示正在安装的文件信息；</p>
+<p>rpm -ivh example.rpm 安装 example.rpm 包并在安装过程中显示正在安装的文件信息及安装进度；</p>
+<p><strong>2、查看安装完成的软件</strong></p>
+<p>[root@jacky zookeeper]# rpm -qa | grep jdk java-1.6.0-openjdk-1.6.0.0-1.66.1.13.0.el6.i686 java-1.7.0-openjdk-1.7.0.45-2.4.3.3.el6.i686</p>
+<p><strong>3、卸载软件</strong></p>
+<p>rpm -e –nodeps 要卸载的软件包</p>
+<p>root@jacky zookeeper]# rpm -e –nodeps java-1.6.0-openjdk-1.6.0.0-1.66.1.13.0.el6.i686</p>
+
       
 
       
@@ -1371,6 +1545,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">配置中心</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">网络编程</a>
               </li>
             
             <div class="clearfix"></div>
