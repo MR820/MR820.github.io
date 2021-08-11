@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/uLhLZMm.gif">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/01/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/2021-2-19T155548.gif">
 <meta property="article:published_time" content="2021-07-01T03:30:11.000Z">
-<meta property="article:modified_time" content="2021-07-09T08:12:03.687Z">
+<meta property="article:modified_time" content="2021-08-10T07:35:40.042Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="内存管理">
 <meta property="article:tag" content="GC">
@@ -259,18 +259,13 @@ var _hmt = _hmt || [];
 <p><img src="https://i.imgur.com/IxjG2aF.png" alt="img"></p>
 <p>每个跨度存在两次，一个用于有指针的对象（<strong>扫描</strong>类），一个用于没有指针的对象（**<code>noscan</code>**类）。这在GC期间有帮助，因为<code>noscan</code>跨度不需要遍历来查找活动对象。</p>
 <ul>
-<li><p><strong>mcentral</strong>：<code>mcentral</code>将相同大小类别的跨度组合在一起。每个<code>mcentral</code>包含两个<code>mspanList</code>：</p>
-<ul>
-<li><p><strong>空</strong>：span 的双链表，没有空闲对象或缓存在<code>mcache</code>. 当这里的一个跨度被释放时，它被移动到非空列表中。</p>
-</li>
-<li><p><strong>非空</strong>：具有自由对象的跨度双链表。当从 请求新的跨度时<code>mcentral</code>，它会从非空列表中获取它并将其移动到空列表中。</p>
-</li>
-</ul>
-</li>
+<li><strong>mcentral</strong>：<code>mcentral</code>将相同大小类别的跨度组合在一起。每个<code>mcentral</code>包含两个<code>mspanList</code>：</li>
+<li><strong>空</strong>：span 的双链表，没有空闲对象或缓存在<code>mcache</code>. 当这里的一个跨度被释放时，它被移动到非空列表中。</li>
+<li><strong>非空</strong>：具有自由对象的跨度双链表。当从 请求新的跨度时<code>mcentral</code>，它会从非空列表中获取它并将其移动到空列表中。</li>
 </ul>
 <p>当<code>mcentral</code>没有任何空闲跨度时，它会从<code>mheap</code>获取</p>
 <ul>
-<li><strong>arena</strong>：堆内存在分配的虚拟内存中根据需要增长和收缩。当需要更多内存时，<code>mheap</code>将它们从虚拟内存中提取为 64MB（对于 64 位体系结构）的块，称为<code>arena</code>. 这些页面在这里映射到跨度。</li>
+<li><strong>arena</strong>：堆内存中分配的虚拟内存中根据需要增长和收缩。当需要更多内存时，<code>mheap</code>将它们从虚拟内存中提取为 64MB（对于 64 位体系结构）的块，称为<code>arena</code>. 这些页面在这里映射到跨度。</li>
 <li><strong>mcache</strong>：这是一个非常有趣的构造。<code>mcache</code>是提供给<code>P</code>（逻辑处理器）的内存缓存，用于存储小对象（对象大小 &lt;= 32Kb）。虽然这类似于线程堆栈，但它是堆的一部分，用于动态数据。<code>mcache</code>包含<code>scan</code>和所有类大小的<code>noscan</code>类型<code>mspan</code>。Goroutines 可以在<code>mcache</code>没有任何锁的情况下获取内存，因为一次<code>P</code>只能有一个<code>G</code>在运行。因此，这更有效。<code>mcache</code>从<code>mcentral</code>需要时请求新的跨度。</li>
 </ul>
 </li>
