@@ -6,15 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
-  <title>Tag: gRPC | xyxxt的笔记</title>
+  <title>go朝花夕拾 | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="xyxxt的笔记">
-<meta property="og:url" content="https://note.wyxxt.org.cn/tags/gRPC/index.html">
+  <meta name="description" content="引用类型slice map channel interface func都是引用类型 除引用类型外的其他类型都是值类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go朝花夕拾">
+<meta property="og:url" content="https://note.wyxxt.org.cn/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
+<meta property="og:description" content="引用类型slice map channel interface func都是引用类型 除引用类型外的其他类型都是值类型">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/image-20210910162229428.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/image-20210910162649351.png">
+<meta property="article:published_time" content="2021-09-10T02:22:32.000Z">
+<meta property="article:modified_time" content="2021-09-10T09:03:10.252Z">
 <meta property="article:author" content="devin">
+<meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/image-20210910162229428.png">
   
     <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
@@ -167,52 +175,211 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-go朝花夕拾" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/08/01/protobuf%E4%B8%8EgRPC/" class="archive-article-date">
-  	<time datetime="2021-08-01T08:13:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-08-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/08/01/protobuf%E4%B8%8EgRPC/">protobuf与gRPC</a>
+    <h1 class="article-title" itemprop="name">
+      go朝花夕拾
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/" class="archive-article-date">
+  	<time datetime="2021-09-10T02:22:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>slice map channel interface func都是引用类型</p>
+<p>除引用类型外的其他类型都是值类型</p>
+<span id="more"></span>
+
+<blockquote>
+<p>nil slice 与 空 slice 的处理是不一致的</p>
+<p>var slice []int 只是声名了slice，却没有给实例话的对象</p>
+<p>这种情况可以用于返回 slice 的函数，当函数异常时，保证函数依然会有 nil 的返回值</p>
+<p>empty slice 是指 slice 不为 nil，但是 slice 没有值，slice 的底层空间是空的</p>
+<p>Slice := make([]int, 0)</p>
+<p><code>nil slice</code> 和 <code>empty slice</code>是不同的东西,需要我们加以区分的</p>
+</blockquote>
+<h2 id="Golang-内存模型"><a href="#Golang-内存模型" class="headerlink" title="Golang 内存模型"></a>Golang 内存模型</h2><blockquote>
+<p>小对象过多会造成GC压力</p>
+<p>因为小对象过多会导致GC三色标记法消耗过多的GPU。</p>
+<p>优化思路，减少对象分配。如使用结构体变量，减少值传递</p>
+</blockquote>
+<h2 id="数据竞争问题"><a href="#数据竞争问题" class="headerlink" title="数据竞争问题"></a>数据竞争问题</h2><blockquote>
+<p>Data Race 问题可以使用互斥锁sync.Mutex 或者也可以通过 CAS 无锁并发解决</p>
+<p>golang 中引入了竞争检测机制，可以使用 go run -race 或者 go build -race 来进行静态检测</p>
+<p>竞争检测器已经完全集成到 Go 工具链中，仅仅添加 -race 标志就行了</p>
+<p>要解决数据竞争的问题，可以使用 sync.Mutex 也可以使用 channel ，使用 channel 的效率比 sync.Mutex 的效率高</p>
+</blockquote>
+<h2 id="Go语言-atomic-原子操作"><a href="#Go语言-atomic-原子操作" class="headerlink" title="Go语言 atomic 原子操作"></a>Go语言 atomic 原子操作</h2><blockquote>
+<p>atomic是最轻量级的锁，cpu原语</p>
+<p>原子操作有5种，增或减  比较并交换  载入  存储  交换</p>
+<p>atomic.AddUint32()</p>
+<p>atomic.CompareAndSwapUint32()</p>
+<p>atomic.LoadUint32() 当读取时，计算机中的任何 cpu 都不会进行针对此值的读写操作</p>
+<p>atomic.SotreUint32() 当存储时，任何 cpu 都不会进行针对针这个值的读写操作</p>
+<p>atomic.SwapUint32(*unit32,unit32) uint32 </p>
+</blockquote>
+<h2 id="GC触发的条件"><a href="#GC触发的条件" class="headerlink" title="GC触发的条件"></a>GC触发的条件</h2><blockquote>
+<ol>
+<li>主动触发， runtime.GC 阻塞操作</li>
+<li>被动触发 定时触发（2min）与内存分配比例触发配合完成</li>
+</ol>
+</blockquote>
+<h2 id="channel是同步还是异步"><a href="#channel是同步还是异步" class="headerlink" title="channel是同步还是异步"></a>channel是同步还是异步</h2><blockquote>
+<p>channel 是异步的，存在3种状态</p>
+<p>nil，未初始化的状态，只进行了声明，或者手动赋值为nil</p>
+<p>active，正常的 channel ，可读可写</p>
+<p>closed，已关闭，千万不要认为关闭 channel 后，channel 的值是 nil</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>nil</th>
+<th>active</th>
+<th>closed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关闭</td>
+<td>panic</td>
+<td>成功关闭（通知所有）</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>发送数据</td>
+<td>永久阻塞</td>
+<td>阻塞或发送成功</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>接收数据</td>
+<td>永久阻塞</td>
+<td>阻塞或接收成功</td>
+<td>永不阻塞 _,ok := &lt;-ch ok is false</td>
+</tr>
+</tbody></table>
+<h2 id="Go-的-struct-能不能比较"><a href="#Go-的-struct-能不能比较" class="headerlink" title="Go 的 struct 能不能比较"></a>Go 的 struct 能不能比较</h2><blockquote>
+<p>相同的 struct 类型可以比较</p>
+<p>不同的 struct 类型不可以比较</p>
+</blockquote>
+<h2 id="Go-reutn-的执行步骤"><a href="#Go-reutn-的执行步骤" class="headerlink" title="Go reutn 的执行步骤"></a>Go reutn 的执行步骤</h2><blockquote>
+<ol>
+<li>给返回值赋值（rval）</li>
+<li>调用 defer 表达式（函数中有 defer 语句时）与 <strong>defer</strong> 有关</li>
+<li>返回给调用函数（ret）</li>
+</ol>
+</blockquote>
+<h2 id="Go-的-select"><a href="#Go-的-select" class="headerlink" title="Go 的 select"></a>Go 的 select</h2><blockquote>
+<p>Golang 的 select 机制，可以理解为是在<strong>语言层面</strong>（用户空间实现，没有用户态和内核态的切换）实现了和 select，poll，epoll 相似的功能。监听多个描述符的读/写事件，一旦某个描述符就绪（一般是读或写事件发生），就能够将发生的事件通知给关心的应用程序去处理该事件。golang 的 select 机制是，监听多个 <strong>channel</strong>，每一个 case 是一个事件，可以是读事件也可以是写事件，随机选择一个执行，可以设置 default，它的作用是当监听的多个事件阻塞住会执行 default 的逻辑。</p>
+</blockquote>
+<h2 id="Go-的-Slice-如何扩容"><a href="#Go-的-Slice-如何扩容" class="headerlink" title="Go 的 Slice 如何扩容"></a>Go 的 Slice 如何扩容</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer <span class="comment">// 指向一个数组的指针</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="keyword">int</span> <span class="comment">// 长度</span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="keyword">int</span> <span class="comment">// 容量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我们在对 slice 进行 append 操作时，可能会造成 slice 的自动扩容。</p>
+<ul>
+<li>如果切片的容量小于1024个元素，那么扩容的时候slice的cap就翻番，乘以2；一旦元素个数超过1024个元素，增长因子就变成1.25，即每次增加原来容量的四分之一</li>
+<li>如果扩容之后，还没有触及原数组的容量，那么，切片中的指针指向的位置，就还是原数组，如果扩容之后，超过了原数组的容量，那么，Go就会开辟一块新的内存，把原来的值拷贝过来，这种情况丝毫不会影响到原数组</li>
+</ul>
+</blockquote>
+<h2 id="Go-内存逃逸分析"><a href="#Go-内存逃逸分析" class="headerlink" title="Go 内存逃逸分析"></a>Go 内存逃逸分析</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> run -gcflags <span class="string">&quot;-m -l&quot;</span> main.<span class="keyword">go</span> </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在Go中逃逸分析是一种确定指针动态范围的方法，可以分析在程序的哪些地方可以访问到指针。它涉及到指针分析和形状分析。</p>
+<p>导致内存逃逸的情况比较多，有些可能还是官方未能够实现精确的分析逃逸情况的 bug，通常来讲就是如果变量的作用域不会扩大并且其行为或者大小能够在编译的时候确定，一般情况下都是分配到栈上，否则就可能发生内存逃逸分配到堆上。</p>
+<p>内存逃逸的五种情况：</p>
+<ol>
+<li>channel，由于无法在编译阶段确定其作用于与传递的路径，所以一般会逃逸到堆上分配</li>
+<li>slice 中的值包含指针，如[]*string的类型。即使切片的底层存储数组仍然可能在栈上，数据的引用也会转移到堆中</li>
+<li>slice 由于 append 操作超出其容量。在编译时，slice 初始大小已知，将会分配在栈上。如果在运行时扩容，则它将被分配到堆上</li>
+<li>调用接口类型的方法。接口类型的方法调用时动态调用，实际使用的具体实现只能在运行时确定</li>
+<li>尽管能够符合分配到栈的场景，但是其大小不能够在在编译时候确定的情况，也会分配到堆上</li>
+</ol>
+<p>总结下来就是，编译时能够确定的属于静态内存，分配在栈上。编译时无法确定的属于动态内存，分配在堆上。运行时大小发生变化的，或运行时才能确定，分配在堆上。</p>
+</blockquote>
+<h2 id="Go-的对象在内存中怎么分配"><a href="#Go-的对象在内存中怎么分配" class="headerlink" title="Go 的对象在内存中怎么分配"></a>Go 的对象在内存中怎么分配</h2><blockquote>
+<ol>
+<li><p>栈内存的分配</p>
+<p>栈和堆在虚拟内存上2块不同功能的内存区域</p>
+<ul>
+<li>栈在高地址，从高地址向低地址增长</li>
+<li>堆在低地址，从低地址向高地址整张</li>
+</ul>
+<p>栈和堆的比较优势：</p>
+<ul>
+<li>栈内存比较简单，分配比堆上快</li>
+<li>栈的内存不需要回收，而堆需要。需要而外花费cpu，有stw</li>
+<li>栈上的内存有更好的局部性原理，堆内存访问的2块数据可能在不同的页上</li>
+</ul>
+</li>
+<li><p>堆内存的分配</p>
+<p>内存管理GC问题，主要是讨论堆内存的管理，分为3部分：</p>
+<ul>
+<li>分配内存块</li>
+<li>回收内存块</li>
+<li>组织内存块</li>
+</ul>
+</li>
+</ol>
+<p>Go 的内存分配类似 TCMalloc ，小对象和大对象只有大小区分，无其他区分。按大小分为67类，最大32kb。超过32kb的大对象，直接从 mheap 分配</p>
+<p>Go 的内存分配原则：</p>
+<p>Go 在程序启动时，会先向操作系统申请一块内存（虚拟地址空间），切成小块后自己管理</p>
+</blockquote>
+<p><img src="/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/image-20210910162229428.png" alt="image-20210910162229428"></p>
+<blockquote>
+<p>aeana 区域就是堆区，Go 动态分配的内存都在这个区域，它把内存分割成8kb大小的页，一些页组合起来成为 mspan。</p>
+<p>bitmap 区域标识 arena 区域哪些地方保存了对象，并且用4bit标志位表示对象是否包含指针、GC标记信息。bitmap 中一个byte 大小的内存对应 arena 区域中4个指针大小（8B）的内存，所以 bitmap 的大小是 512GB / (4 * 8B) = 16GB</p>
+</blockquote>
+<p><img src="/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/image-20210910162649351.png" alt="image-20210910162649351"></p>
+<h2 id="Go-内存泄漏"><a href="#Go-内存泄漏" class="headerlink" title="Go 内存泄漏"></a>Go 内存泄漏</h2><ul>
+<li>预期能被快速释放的内存因被根对象引用而没有得到迅速释放</li>
+<li>goroutine 泄漏</li>
+</ul>
+<h2 id="Go-new-和-make-的区别"><a href="#Go-new-和-make-的区别" class="headerlink" title="Go new 和 make 的区别"></a>Go new 和 make 的区别</h2><blockquote>
+<p>值类型：int    float    bool    string    struct    和    array</p>
+<p>变量直接存储值，分配栈区的内存空间，这些变量所占据的空间在函数被调用完成后会自动释放</p>
+<p>引用类型：slice    map    chan    interface    func    和    指针</p>
+<p>变量存储的是一个地址（或者理解为指针），指针指向内存中真正存储数据的首地址。内存通常在堆上分配，通过 GC 回收</p>
+<p>需要注意的是，对于引用类型的变量，我们不仅要声明变量，更重要的是，我们得手动为它分配空间</p>
+</blockquote>
+<blockquote>
+<p>因此，new该方法的参数要求传入一个类型，而不是一个值，它会申请该类型大小的空间，并会初始化为对应的零值，返回该内存空间的一个指针</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">new</span><span class="params">(Type)</span> *<span class="title">Type</span></span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>而make也是用于内存分配，但是和new 不同，只能用于引用对象的内存创建，它返回的类型就是类型本省，而不是它们的指针</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">make</span><span class="params">(t Type, size ...IntergerType)</span> <span class="title">Type</span></span></span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">protobuf</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">gRPC</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">go</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -225,17 +392,133 @@ var _hmt = _hmt || [];
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://note.wyxxt.org.cn/2021/09/10/go%E6%9C%9D%E8%8A%B1%E5%A4%95%E6%8B%BE/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2021/08/08/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">网络编程</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">引用类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Golang-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">Golang 内存模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">数据竞争问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go%E8%AF%AD%E8%A8%80-atomic-%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">Go语言 atomic 原子操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC%E8%A7%A6%E5%8F%91%E7%9A%84%E6%9D%A1%E4%BB%B6"><span class="toc-number">5.</span> <span class="toc-text">GC触发的条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#channel%E6%98%AF%E5%90%8C%E6%AD%A5%E8%BF%98%E6%98%AF%E5%BC%82%E6%AD%A5"><span class="toc-number">6.</span> <span class="toc-text">channel是同步还是异步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E7%9A%84-struct-%E8%83%BD%E4%B8%8D%E8%83%BD%E6%AF%94%E8%BE%83"><span class="toc-number">7.</span> <span class="toc-text">Go 的 struct 能不能比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-reutn-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%AD%A5%E9%AA%A4"><span class="toc-number">8.</span> <span class="toc-text">Go reutn 的执行步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E7%9A%84-select"><span class="toc-number">9.</span> <span class="toc-text">Go 的 select</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E7%9A%84-Slice-%E5%A6%82%E4%BD%95%E6%89%A9%E5%AE%B9"><span class="toc-number">10.</span> <span class="toc-text">Go 的 Slice 如何扩容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E5%86%85%E5%AD%98%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90"><span class="toc-number">11.</span> <span class="toc-text">Go 内存逃逸分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%9C%A8%E5%86%85%E5%AD%98%E4%B8%AD%E6%80%8E%E4%B9%88%E5%88%86%E9%85%8D"><span class="toc-number">12.</span> <span class="toc-text">Go 的对象在内存中怎么分配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">13.</span> <span class="toc-text">Go 内存泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-new-%E5%92%8C-make-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">14.</span> <span class="toc-text">Go new 和 make 的区别</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
+  <div id="gitment-ctn"></div>
+<link rel="stylesheet" href="//imsun.github.io/gitment/style/default.css">
+<script src="//imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: "Fri Sep 10 2021 10:22:32 GMT+0800",
+    owner: 'MR820',
+    repo: 'MR820.github.io',
+    oauth: {
+      client_id: 'b9615ac260b04335eeb1',
+      client_secret: 'b6999701fd47c0dc2c31cd156be1852faac07b81',
+    },
+  })
+  gitment.render('gitment-ctn')
+</script>
+  
 
 
           </div>
@@ -309,9 +592,9 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
