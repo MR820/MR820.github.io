@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716145655205.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210716152958674.png">
 <meta property="article:published_time" content="2021-07-03T04:19:30.000Z">
-<meta property="article:modified_time" content="2021-07-16T10:04:37.329Z">
+<meta property="article:modified_time" content="2021-09-09T10:14:20.092Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="context">
 <meta name="twitter:card" content="summary">
@@ -201,6 +201,12 @@ var _hmt = _hmt || [];
 
 <p>Google开发了一个<code>context</code>包，可以轻松地将请求范围的值、取消信号和截止日期跨 API 边界传递给处理请求所涉及的所有 goroutine。该包作为<a target="_blank" rel="noopener" href="https://golang.org/pkg/context">context</a>公开可用 。</p>
 <p><img src="/2021/07/03/go%E8%AF%AD%E8%A8%80context/image-20210712113852151.png" alt="image-20210712113852151"></p>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><blockquote>
+<p>Done() 方法返回一个channel</p>
+<p>cancel、timeout、deadline 这三种情况，会close channel</p>
+<p>由于close channel 所有协程都能监听到，所以所有goroutine都可以关闭</p>
+<p>特别注意，除了close操作，往channel中写入一条数据时，只能有一个goroutine能冲channel中获取到数据</p>
+</blockquote>
 <h2 id="语境"><a href="#语境" class="headerlink" title="语境"></a>语境</h2><p>context包的核心是Context类型</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 上下文携带截止日期、取消信号和请求范围的值</span></span><br><span class="line"><span class="comment">// 跨越API边界。他的方法对于多goroutine同时使用是安全的</span></span><br><span class="line"><span class="keyword">type</span> Context <span class="keyword">interface</span>&#123;</span><br><span class="line">    <span class="comment">// Done returns a channel that is closed when this Context is canceled</span></span><br><span class="line">    <span class="comment">// or times out.</span></span><br><span class="line">    Done() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Err indicates why this context was canceled, after the Done channel</span></span><br><span class="line">    <span class="comment">// is closed.</span></span><br><span class="line">    Err() error</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Deadline returns the time when this Context will be canceled, if any.</span></span><br><span class="line">    Deadline() (deadline time.Time, ok <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Value returns the value associated with key or nil if none.</span></span><br><span class="line">    Value(key <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -334,11 +340,11 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80cgo/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          go语言cgo
+          go语言unsafe
         
       </div>
     </a>
@@ -372,7 +378,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Go-Concurrency-Patterns-Context"><span class="toc-number">1.</span> <span class="toc-text">Go Concurrency Patterns: Context</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">语境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">1.3.</span> <span class="toc-text">派生上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.5.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86"><span class="toc-number">1.6.</span> <span class="toc-text">设计原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.7.</span> <span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC%E8%B0%83%E7%94%A8"><span class="toc-number">1.7.1.</span> <span class="toc-text">RPC调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PipeLine"><span class="toc-number">1.7.2.</span> <span class="toc-text">PipeLine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B6%85%E6%97%B6%E8%AF%B7%E6%B1%82"><span class="toc-number">1.7.3.</span> <span class="toc-text">超时请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84request%E4%BA%92%E7%9B%B8%E4%BC%A0%E9%80%92%E6%95%B0%E6%8D%AE"><span class="toc-number">1.7.4.</span> <span class="toc-text">HTTP服务器的request互相传递数据</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Go-Concurrency-Patterns-Context"><span class="toc-number">1.</span> <span class="toc-text">Go Concurrency Patterns: Context</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">1.2.</span> <span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E5%A2%83"><span class="toc-number">1.3.</span> <span class="toc-text">语境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-number">1.4.</span> <span class="toc-text">派生上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.5.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.6.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E7%90%86"><span class="toc-number">1.7.</span> <span class="toc-text">设计原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.8.</span> <span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RPC%E8%B0%83%E7%94%A8"><span class="toc-number">1.8.1.</span> <span class="toc-text">RPC调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PipeLine"><span class="toc-number">1.8.2.</span> <span class="toc-text">PipeLine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B6%85%E6%97%B6%E8%AF%B7%E6%B1%82"><span class="toc-number">1.8.3.</span> <span class="toc-text">超时请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84request%E4%BA%92%E7%9B%B8%E4%BC%A0%E9%80%92%E6%95%B0%E6%8D%AE"><span class="toc-number">1.8.4.</span> <span class="toc-text">HTTP服务器的request互相传递数据</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -555,10 +561,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cgo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">context</a>
               </li>
              
@@ -632,10 +634,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Elasticsearch</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
             
             <div class="clearfix"></div>

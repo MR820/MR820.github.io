@@ -26,14 +26,17 @@
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144049481.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144756264.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709144834053.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823103716760.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823103917401.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823110010097.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161917278.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161928107.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161940501.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210709161954142.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/dashboard-by-type.png">
 <meta property="article:published_time" content="2021-07-04T06:40:42.000Z">
-<meta property="article:modified_time" content="2021-08-10T06:20:28.903Z">
+<meta property="article:modified_time" content="2021-08-23T08:08:05.411Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
@@ -347,7 +350,18 @@ var _hmt = _hmt || [];
 </ol>
 <p>查看cpu profile，聚焦长耗时函数</p>
 <p>如果有 runtime.mallocgc 这和内存分配与垃圾回收有关</p>
-<h2 id="查找内存泄漏"><a href="#查找内存泄漏" class="headerlink" title="查找内存泄漏"></a>查找内存泄漏</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成 heap profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/heap</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> -sample_index 参数，可以切换内存分析的类型</span></span><br><span class="line">go tool pprof -sample_index=alloc_space /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br><span class="line"></span><br><span class="line">go tool pprof --http=:8082 /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br></pre></td></tr></table></figure>
+<h2 id="查找内存泄漏"><a href="#查找内存泄漏" class="headerlink" title="查找内存泄漏"></a>查找内存泄漏</h2><p><strong>使用内存profiling不能够发现内存泄露</strong></p>
+<p>profiling只记录对内存分配情况以及调用栈信息</p>
+<p>使用监控工具 Promethues 观察内存走势，可以知道是否有发生内存泄漏</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成 heap profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/heap</span><br><span class="line"></span><br><span class="line">top 5</span><br><span class="line"></span><br><span class="line">list main.main</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823103716760.png" alt="image-20210823103716760"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(pprof) trace</span><br><span class="line"><span class="meta">#</span><span class="bash">打印所有调用栈，以及调用栈的指标信息</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823103917401.png" alt="image-20210823103917401"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> -sample_index 参数，可以切换内存分析的类型</span></span><br><span class="line">go tool pprof -sample_index=alloc_space /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br><span class="line"></span><br><span class="line">go tool pprof --http=:8082 /Users/xingzhiwei/pprof/pprof.alloc_objects.alloc_space.inuse_objects.inuse_space.002.pb.gz</span><br></pre></td></tr></table></figure>
+
+
 
 <table>
 <thead>
@@ -374,6 +388,19 @@ var _hmt = _hmt || [];
 </tr>
 </tbody></table>
 <p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210701111108034.png" alt="image-20210701111108034"></p>
+<h2 id="goroutine泄漏"><a href="#goroutine泄漏" class="headerlink" title="goroutine泄漏"></a>goroutine泄漏</h2><ol>
+<li><p>每个goroutine占2kb</p>
+</li>
+<li><p>goroutine执行过程中，有些变量只想堆内存，gc回认为内存仍然在使用，不会回收（这部分heap profile能体现出来）</p>
+<blockquote>
+<p>如果不知道何时停止一个goroutine，这个goroutine就是潜在的内存泄露</p>
+</blockquote>
+</li>
+</ol>
+<p>如何判断是goroutine泄漏导致的内存泄漏，监控goroutine数量，goroutine持续增长，则可能是goroutine泄漏</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成 goroutine profile</span></span><br><span class="line">go tool pprof http://localhost:8081/debug/pprof/goroutine</span><br><span class="line"></span><br><span class="line">top</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重复两次以上操作，看看是哪个goroutine泄漏</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 两个比较</span></span><br><span class="line">go tool pprof -base pprof.leak_demo.goroutine.001.pb.gz pprof.leak_demo.goroutine.002.pb.gz</span><br><span class="line"></span><br><span class="line">list</span><br><span class="line"></span><br><span class="line">go tool trace trace.out</span><br><span class="line"></span><br><span class="line">traces</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20210823110010097.png" alt="image-20210823110010097"></p>
 <h1 id="debugcharts"><a href="#debugcharts" class="headerlink" title="debugcharts"></a>debugcharts</h1><blockquote>
 <p>debugcharts 监控占用内存大，生产环境不建议开启。</p>
 </blockquote>
@@ -521,7 +548,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#trace"><span class="toc-number">1.</span> <span class="toc-text">trace</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pprof"><span class="toc-number">2.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AF"><span class="toc-number">2.1.</span> <span class="toc-text">开启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E4%BA%92%E5%91%BD%E4%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">交互命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E6%93%8D%E4%BD%9C%E7%95%8C%E9%9D%A2%EF%BC%88%E5%B8%A6%E7%81%AB%E7%84%B0%E5%9B%BE%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">可视化操作界面（带火焰图）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.</span> <span class="toc-text">解决问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.5.</span> <span class="toc-text">查找内存泄漏</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#debugcharts"><span class="toc-number">3.</span> <span class="toc-text">debugcharts</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#prometheus"><span class="toc-number">4.</span> <span class="toc-text">prometheus</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#trace"><span class="toc-number">1.</span> <span class="toc-text">trace</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pprof"><span class="toc-number">2.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AF"><span class="toc-number">2.1.</span> <span class="toc-text">开启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E4%BA%92%E5%91%BD%E4%BB%A4"><span class="toc-number">2.2.</span> <span class="toc-text">交互命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E6%93%8D%E4%BD%9C%E7%95%8C%E9%9D%A2%EF%BC%88%E5%B8%A6%E7%81%AB%E7%84%B0%E5%9B%BE%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">可视化操作界面（带火焰图）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.</span> <span class="toc-text">解决问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">2.5.</span> <span class="toc-text">查找内存泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#goroutine%E6%B3%84%E6%BC%8F"><span class="toc-number">2.6.</span> <span class="toc-text">goroutine泄漏</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#debugcharts"><span class="toc-number">3.</span> <span class="toc-text">debugcharts</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#prometheus"><span class="toc-number">4.</span> <span class="toc-text">prometheus</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -704,10 +731,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cgo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">context</a>
               </li>
              
@@ -781,10 +804,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Elasticsearch</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
             
             <div class="clearfix"></div>

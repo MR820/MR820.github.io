@@ -8,18 +8,20 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>go语言unsafe | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="unsafe包">
+  <meta name="description" content="unsafe包golang是一种静态的强类型的语言，所有的类型都是不能随意转换的，Go语言是不允许两个指针类型进行转换的。go官方是不推荐使用unsafe的操作因为它是不安全的，它绕过了golang的内存安全原则，容易使你的程序出现莫名其妙的问题，不利于程序的扩展与维护。但是在很多地方却是很实用。在一些go底层的包中unsafe包被很频繁的使用。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go语言unsafe">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
-<meta property="og:description" content="unsafe包">
+<meta property="og:description" content="unsafe包golang是一种静态的强类型的语言，所有的类型都是不能随意转换的，Go语言是不允许两个指针类型进行转换的。go官方是不推荐使用unsafe的操作因为它是不安全的，它绕过了golang的内存安全原则，容易使你的程序出现莫名其妙的问题，不利于程序的扩展与维护。但是在很多地方却是很实用。在一些go底层的包中unsafe包被很频繁的使用。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/image-20210823174714075.png">
 <meta property="article:published_time" content="2021-07-03T04:20:50.000Z">
-<meta property="article:modified_time" content="2021-07-08T05:53:55.344Z">
+<meta property="article:modified_time" content="2021-08-23T09:49:48.322Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="unsafe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/image-20210823174714075.png">
   
     <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
@@ -192,9 +194,13 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>unsafe包</p>
+        <h2 id="unsafe包"><a href="#unsafe包" class="headerlink" title="unsafe包"></a>unsafe包</h2><p>golang是一种静态的强类型的语言，所有的类型都是不能随意转换的，Go语言是不允许两个指针类型进行转换的。go官方是不推荐使用unsafe的操作因为它是不安全的，它绕过了golang的内存安全原则，容易使你的程序出现莫名其妙的问题，不利于程序的扩展与维护。但是在很多地方却是很实用。在一些go底层的包中unsafe包被很频繁的使用。</p>
 <span id="more"></span>
 
+<p><img src="/2021/07/03/go%E8%AF%AD%E8%A8%80unsafe/image-20210823174714075.png" alt="image-20210823174714075"></p>
+<h2 id="unsafe定义"><a href="#unsafe定义" class="headerlink" title="unsafe定义"></a>unsafe定义</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> unsafe</span><br><span class="line"><span class="comment">//ArbitraryType仅用于文档目的，实际上并不是unsafe包的一部分,它表示任意Go表达式的类型。</span></span><br><span class="line"><span class="keyword">type</span> ArbitraryType <span class="keyword">int</span></span><br><span class="line"><span class="comment">//任意类型的指针，类似于C的*void</span></span><br><span class="line"><span class="keyword">type</span> Pointer *ArbitraryType</span><br><span class="line"><span class="comment">//确定结构在内存中占用的确切大小</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sizeof</span><span class="params">(x ArbitraryType)</span> <span class="title">uintptr</span></span></span><br><span class="line"><span class="comment">//返回结构体中某个field的偏移量</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Offsetof</span><span class="params">(x ArbitraryType)</span> <span class="title">uintptr</span></span></span><br><span class="line"><span class="comment">//返回结构体中某个field的对其值（字节对齐的原因）</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Alignof</span><span class="params">(x ArbitraryType)</span> <span class="title">uintptr</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2>
       
 
       
@@ -298,8 +304,8 @@ var _hmt = _hmt || [];
     </a>
   
   
-    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80cgo/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">go语言cgo</div>
+    <a href="/2021/07/03/go%E8%AF%AD%E8%A8%80context/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">go语言context</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -326,7 +332,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#unsafe%E5%8C%85"><span class="toc-number">1.</span> <span class="toc-text">unsafe包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#unsafe%E5%AE%9A%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">unsafe定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">使用</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -509,10 +515,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cgo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">context</a>
               </li>
              
@@ -586,10 +588,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Elasticsearch</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
             
             <div class="clearfix"></div>

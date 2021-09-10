@@ -8,20 +8,24 @@
   <link rel="dns-prefetch" href="https://note.wyxxt.org.cn">
   <title>go优化 | xyxxt的笔记</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="逃逸分析">
+  <meta name="description" content="逃逸分析在 C 语言中，可以使用 malloc 和 free 手动在堆上分配和回收内存。Go 语言中，堆内存是通过垃圾回收机制自动管理的，无需开发者指定。那么，Go 编译器怎么知道某个变量需要分配在栈上，还是堆上呢？**编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)**。逃逸分析由编译器完成，作用于编译阶段。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go优化">
 <meta property="og:url" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="xyxxt的笔记">
-<meta property="og:description" content="逃逸分析">
+<meta property="og:description" content="逃逸分析在 C 语言中，可以使用 malloc 和 free 手动在堆上分配和回收内存。Go 语言中，堆内存是通过垃圾回收机制自动管理的，无需开发者指定。那么，Go 编译器怎么知道某个变量需要分配在栈上，还是堆上呢？**编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)**。逃逸分析由编译器完成，作用于编译阶段。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823164853750.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823171232783.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823173830618.png">
+<meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823174139187.png">
 <meta property="og:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210701111051915.png">
 <meta property="article:published_time" content="2021-07-04T07:32:20.000Z">
-<meta property="article:modified_time" content="2021-07-08T05:57:43.861Z">
+<meta property="article:modified_time" content="2021-08-23T09:44:46.836Z">
 <meta property="article:author" content="devin">
 <meta property="article:tag" content="优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210701111051915.png">
+<meta name="twitter:image" content="https://note.wyxxt.org.cn/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823164853750.png">
   
     <link rel="alternative" href="/atom.xml" title="xyxxt的笔记" type="application/atom+xml">
   
@@ -194,9 +198,59 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h1><span id="more"></span>
+        <h1 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h1><p>在 C 语言中，可以使用 <code>malloc</code> 和 <code>free</code> 手动在堆上分配和回收内存。Go 语言中，堆内存是通过垃圾回收机制自动管理的，无需开发者指定。那么，Go 编译器怎么知道某个变量需要分配在栈上，还是堆上呢？**编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)**。逃逸分析由编译器完成，作用于编译阶段。</p>
+<span id="more"></span>
 
-<h1 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h1><h1 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h1><h1 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h1><h1 id="对齐方式"><a href="#对齐方式" class="headerlink" title="对齐方式"></a>对齐方式</h1><h2 id="填充方式"><a href="#填充方式" class="headerlink" title="填充方式"></a>填充方式</h2><h2 id="较少内存拷贝"><a href="#较少内存拷贝" class="headerlink" title="较少内存拷贝"></a>较少内存拷贝</h2><p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210701111051915.png" alt="image-20210701111051915"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run -gcflags &quot;-m -l&quot; main.go </span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823164853750.png" alt="image-20210823164853750"></p>
+<ol>
+<li><p>指针逃逸</p>
+<p>指针逃逸应该是最容易理解的一种情况了，即在函数中创建了一个对象，返回了这个对象的指针。这种情况下，函数虽然退出了，但是因为指针的存在，对象的内存不能随着函数结束而回收，因此只能分配在堆上。</p>
+</li>
+<li><p>interface{}动态类型逃逸</p>
+<p>在 Go 语言中，空接口即 <code>interface&#123;&#125;</code> 可以表示任意的类型，如果函数参数为 <code>interface&#123;&#125;</code>，编译期间很难确定其参数的具体类型，也会发生逃逸。</p>
+</li>
+<li><p>栈空间不足</p>
+<p>操作系统对内核线程使用的栈空间是有大小限制的，64 位系统上通常是 8 MB。可以使用 <code>ulimit -a</code> 命令查看机器上栈允许占用的内存的大小。</p>
+<p>对于 Go 语言来说，运行时(runtime) 尝试在 goroutine 需要的时候动态地分配栈空间，goroutine 的初始栈大小为 2 KB。当 goroutine 被调度时，会绑定内核线程执行，栈空间大小也不会超过操作系统的限制。</p>
+<p>对 Go 编译器而言，超过一定大小的局部变量将逃逸到堆上，不同的 Go 版本的大小限制可能不一样。</p>
+</li>
+<li><p>闭包</p>
+</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Increase</span><span class="params">()</span> <span class="title">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	n := <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">		n++</span><br><span class="line">		<span class="keyword">return</span> n</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	in := Increase()</span><br><span class="line">	fmt.Println(in()) <span class="comment">// 1</span></span><br><span class="line">	fmt.Println(in()) <span class="comment">// 2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Increase()</code> 返回值是一个闭包函数，该闭包函数访问了外部变量 n，那变量 n 将会一直存在，直到 <code>in</code> 被销毁。很显然，变量 n 占用的内存不能随着函数 <code>Increase()</code> 的退出而回收，因此将会逃逸到堆上。</p>
+<!--more-->
+
+
+
+<h1 id="GC优化"><a href="#GC优化" class="headerlink" title="GC优化"></a>GC优化</h1><h2 id="传值vs传指针"><a href="#传值vs传指针" class="headerlink" title="传值vs传指针"></a>传值vs传指针</h2><p>传值会拷贝整个对象，而传指针只会拷贝指针地址，指向的对象是同一个。传指针可以减少值的拷贝，但是会导致内存分配逃逸到堆中，增加垃圾回收(GC)的负担。在对象频繁创建和删除的场景下，传递指针导致的 GC 开销可能会严重影响性能。</p>
+<p>一般情况下，对于需要修改原对象值，或占用内存比较大的结构体，选择传指针。对于只读的占用内存较小的结构体，直接传值能够获得更好的性能。</p>
+<h2 id="slice-预先分配内存"><a href="#slice-预先分配内存" class="headerlink" title="slice 预先分配内存"></a>slice 预先分配内存</h2><p>当<code>slice</code>的容量小于1024时，容量是按照2倍大小增长的。当容量大于1024，增长的容量是原来的1.25倍</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * slice.go</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> demo</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">appendOne</span><span class="params">(num <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> res []<span class="keyword">int</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; num; i++ &#123;</span><br><span class="line">		res = <span class="built_in">append</span>(res, i)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">appendMany</span><span class="params">(num <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	res := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, num)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; num; i++ &#123;</span><br><span class="line">		res = <span class="built_in">append</span>(res, i)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * slice_test.go</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> demo</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;testing&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkAppendOne</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	num := <span class="number">100000</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		_ = appendOne(num)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkAppendMany</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	num := <span class="number">100000</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		_ = appendMany(num)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go test -bench=. -benchmem</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823171232783.png" alt="image-20210823171232783"></p>
+<h2 id="map中保存值，而不是指针"><a href="#map中保存值，而不是指针" class="headerlink" title="map中保存值，而不是指针"></a>map中保存值，而不是指针</h2><h2 id="使用分段map"><a href="#使用分段map" class="headerlink" title="使用分段map"></a>使用分段map</h2><p>可以看到，使用分段的，保存值的map的GC耗时最小</p>
+<h2 id="使用struct-优化"><a href="#使用struct-优化" class="headerlink" title="使用struct{}优化"></a>使用struct{}优化</h2><p><code>struct&#123;&#125;</code>经过编译器特殊优化，指向同一个内存地址(runtime.zerobase)，不占用空间。</p>
+<h2 id="GC分析工具"><a href="#GC分析工具" class="headerlink" title="GC分析工具"></a>GC分析工具</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go tool pprfo</span><br><span class="line">go tool trace</span><br><span class="line">go run -gcflags &quot;-m -l&quot; main.go </span><br><span class="line">GODEBUG=&quot;gctrace=1&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id><a href="#" class="headerlink" title></a></h2><h1 id="池化-sync-pool"><a href="#池化-sync-pool" class="headerlink" title="池化 sync.pool"></a>池化 sync.pool</h1><p>保存和复用临时对象，减少内存分配，降低 GC 压力</p>
+<p>json 的反序列化在文本解析和网络通信过程中非常常见，当程序并发度非常高的情况下，短时间内需要创建大量的临时对象。而这些对象是都是分配在堆上的，会给 GC 造成很大压力，严重影响程序的性能。</p>
+<p>Go 语言从 1.3 版本开始提供了对象重用的机制，即 sync.Pool。sync.Pool 是可伸缩的，同时也是并发安全的，其大小仅受限于内存的大小。sync.Pool 用于存储那些被分配了但是没有被使用，而未来可能会使用的值。这样就可以不用再次经过内存分配，可直接复用已有对象，减轻 GC 的压力，从而提升系统的性能。</p>
+<p>sync.Pool 的大小是可伸缩的，高负载时会动态扩容，存放在池中的对象如果不活跃了会被自动清理。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name   <span class="keyword">string</span></span><br><span class="line">	Age    <span class="keyword">int32</span></span><br><span class="line">	Remark [<span class="number">1024</span>]<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> studentPool = sync.Pool&#123;New: <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(Student)</span><br><span class="line">&#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> buf, _ = json.Marshal(Student&#123;Name: <span class="string">&quot;Geektutu&quot;</span>, Age: <span class="number">25</span>&#125;)</span><br><span class="line">	stu := studentPool.Get().(*Student)</span><br><span class="line">	json.Unmarshal(buf, stu)</span><br><span class="line">	studentPool.Put(stu)</span><br><span class="line">	fmt.Println(stu)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823173830618.png" alt="image-20210823173830618"></p>
+<h1 id="内存分配模型"><a href="#内存分配模型" class="headerlink" title="内存分配模型"></a>内存分配模型</h1><p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210823174139187.png" alt="image-20210823174139187"></p>
+<h2 id="-1"><a href="#-1" class="headerlink" title></a></h2><p><img src="/2021/07/04/go%E4%BC%98%E5%8C%96/image-20210701111051915.png" alt="image-20210701111051915"></p>
 
       
 
@@ -329,7 +383,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">逃逸分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GC%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">GC优化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96-sync-pool"><span class="toc-number">3.</span> <span class="toc-text">池化 sync.pool</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">内存分配模型</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F"><span class="toc-number">5.</span> <span class="toc-text">对齐方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A1%AB%E5%85%85%E6%96%B9%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">填充方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%83%E5%B0%91%E5%86%85%E5%AD%98%E6%8B%B7%E8%B4%9D"><span class="toc-number">5.2.</span> <span class="toc-text">较少内存拷贝</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">逃逸分析</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GC%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">GC优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E5%80%BCvs%E4%BC%A0%E6%8C%87%E9%92%88"><span class="toc-number">2.1.</span> <span class="toc-text">传值vs传指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#slice-%E9%A2%84%E5%85%88%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98"><span class="toc-number">2.2.</span> <span class="toc-text">slice 预先分配内存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map%E4%B8%AD%E4%BF%9D%E5%AD%98%E5%80%BC%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E6%8C%87%E9%92%88"><span class="toc-number">2.3.</span> <span class="toc-text">map中保存值，而不是指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%88%86%E6%AE%B5map"><span class="toc-number">2.4.</span> <span class="toc-text">使用分段map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8struct-%E4%BC%98%E5%8C%96"><span class="toc-number">2.5.</span> <span class="toc-text">使用struct{}优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="toc-number">2.6.</span> <span class="toc-text">GC分析工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">2.7.</span> <span class="toc-text"></span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96-sync-pool"><span class="toc-number">3.</span> <span class="toc-text">池化 sync.pool</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">3.1.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">内存分配模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#-1"><span class="toc-number">4.1.</span> <span class="toc-text"></span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -512,10 +566,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">cgo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">context</a>
               </li>
              
@@ -589,10 +639,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Elasticsearch</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
             
             <div class="clearfix"></div>
